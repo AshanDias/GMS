@@ -1,3 +1,5 @@
+<p>after pulling the project run 'composer update' command and 'npm install' command, after in one cmd run 'php artisan serve' command and use another cmd for 'npm run watch' command</p>
+
 <p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
 
 <p align="center">

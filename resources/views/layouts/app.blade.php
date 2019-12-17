@@ -41,6 +41,7 @@
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
+   <div class="wrapper">
     <div id="app">         
         <header-vue></header-vue>
         <aside-vue></aside-vue>
@@ -94,12 +95,18 @@
                     </ul>
                 </div>
             </div>
-        </nav>  --}}        
+        </nav>  --}}     
+
         <main class="py-0">   
-            @yield('content')           
+                <router-view></router-view>
+            {{--  @yield('content')             --}}
         </main>         
         <footer-vue></footer-vue>   
+        <aside class="control-sidebar control-sidebar-dark">
+                <!-- Control sidebar content goes here -->
+        </aside>
     </div> 
+</div>  
     <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
@@ -134,5 +141,6 @@
 <script src="dist/js/pages/dashboard.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>  
+
 </body>
 </html>

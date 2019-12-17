@@ -9,8 +9,8 @@
           alt="AdminLTE Logo"
           class="brand-image img-circle elevation-3"
           style="opacity: .8"
-        />
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        />        
+        <span class="brand-text font-weight-light">GMS</span>
       </a>
 
       <!-- Sidebar -->
@@ -36,71 +36,76 @@
             <!-- Add icons to the links using the .nav-icon class
             with font-awesome or any other icon font library-->
             <li class="nav-item has-treeview menu-open">
-              <a href="#" class="nav-link active">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
+              <router-link to="/" class="nav-link active">
+                <i class="nav-icon fab fa-gripfire"></i>
                 <p>
                   Dashboard
-                  <i class="right fas fa-angle-left"></i>
                 </p>
-              </a>
+              </router-link>
            </li>           
             <li class="nav-item has-treeview">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-copy"></i>
                 <p>
-                  Layout Options
+                  Operation
                   <i class="fas fa-angle-left right"></i>
                   <span class="badge badge-info right">6</span>
                 </p>
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="pages/layout/top-nav.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Top Navigation</p>
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-wave-square"></i>
+                    <p>Requests</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="pages/layout/boxed.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Boxed</p>
+                  <a href="#" class="nav-link">
+                    <i class="fas fa-user-friends nav-icon"></i>
+                    <p>Collector Groups</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="pages/layout/fixed-sidebar.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Fixed Sidebar</p>
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-cogs"></i>
+                    <p>Group Assign</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="pages/layout/fixed-topnav.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Fixed Navbar</p>
+                  <a href="#" class="nav-link">
+                   <i class="nav-icon fas fa-user-shield"></i>
+                    <p>User</p>
                   </a>
-                </li>
-                <li class="nav-item">
-                  <a href="pages/layout/fixed-footer.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Fixed Footer</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="pages/layout/collapsed-sidebar.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Collapsed Sidebar</p>
-                  </a>
-                </li>
+                </li>                 
               </ul>
             </li>          
             
-            <li class="nav-header">EXAMPLES</li>            
+            <li class="nav-header">Master Files</li>            
             <li class="nav-item">
-              <a href="pages/gallery.html" class="nav-link">
-                <i class="nav-icon far fa-image"></i>
-                <p>Gallery</p>
+              <router-link to="/employee" class="nav-link">
+                <i class="nav-icon far fa-user "></i>
+                <p>Employee</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/employee/type" class="nav-link">
+               <i class="nav-icon fas fa-align-center"></i>
+                <p>Employee Type</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/vehicle" class="nav-link">
+                <i class="nav-icon fas fa-tractor"></i>
+                <p>Vehicle</p>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-landmark"></i>
+                <p>Area</p>
               </a>
             </li>
-            <li class="nav-item has-treeview">
+            <!-- <li class="nav-item has-treeview">
               <a href="#" class="nav-link">
                 <i class="nav-icon far fa-envelope"></i>
                 <p>
@@ -128,7 +133,7 @@
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> -->
            
           </ul>
         </nav>
@@ -136,6 +141,7 @@
       </div>
       <!-- /.sidebar -->
     </aside>
+    <div id="sidebar-overlay"></div>
   </div>
 </template>
 <script>

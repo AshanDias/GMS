@@ -7,6 +7,8 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use DB;
 
 class RegisterController extends Controller
 {
@@ -28,17 +30,17 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    //protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('guest');
+    // }
 
     /**
      * Get a validator for an incoming registration request.
@@ -69,4 +71,78 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+    public function createUser(Request $request)
+    {
+        
+       $this->validate($request,[
+        'name'=> 'required|max:50',
+        'email'=> 'required|max:225|unique:users',
+        'user_type'=>'required',
+        'password'=>'required|min:8'
+       ]);
+       try {
+           
+        $result = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'user_type'=>$request->user_type,
+            'password' => Hash::make($request->password),
+        ]);
+
+        if($result)
+                return "Success";
+        else
+                return "Fail";
+
+       } catch (Exception $th) {
+            return $th;
+       }
+    }
+
+    public function populateUsers($count)
+    {
+        return User::paginate($count);
+    }
+
+    public function updateUser(Request $request)
+    {
+        $this->validate($request,[
+            'name'=> 'required|max:50',
+            'user_type'=>'required',
+           ]);
+           try {            
+                         
+            $user = User::find($request->id);
+            $user->name =  $request->name;
+            $user->user_type = $request->user_type;
+            $result = $user->save();
+    
+            if($result)
+                    return "Success";
+            else
+                    return "Fail";
+    
+           } catch (Exception $th) {
+                return $th;
+           }
+    }
+
+    public function deleteUser($id)
+    {
+        try {            
+                         
+            $user = User::findOrFail($id); 
+            $result = $user->delete();
+    
+            if($result)
+                    return "Success";
+            else
+                    return "Fail";
+    
+           } catch (Exception $th) {
+                return $th;
+           }
+    }
+
 }

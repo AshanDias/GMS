@@ -71,11 +71,11 @@
                     <p>Group Assign</p>
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
+                <li class="nav-item">                      
+                  <router-link to="/user" class="nav-link">
                    <i class="nav-icon fas fa-user-shield"></i>
                     <p>User</p>
-                  </a>
+                  </router-link>
                 </li>                 
               </ul>
             </li>          
@@ -87,12 +87,12 @@
                 <p>Employee</p>
               </router-link>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <router-link to="/employee/type" class="nav-link">
                <i class="nav-icon fas fa-align-center"></i>
                 <p>Employee Type</p>
               </router-link>
-            </li>
+            </li> -->
             <li class="nav-item">
               <router-link to="/vehicle" class="nav-link">
                 <i class="nav-icon fas fa-tractor"></i>

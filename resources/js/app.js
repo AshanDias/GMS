@@ -8,14 +8,18 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 import VueRouter from 'vue-router'
+import Notifications from 'vue-notification'
+import VuejsDialog from 'vuejs-dialog';
 Vue.use(VueRouter)
- 
+Vue.use(Notifications)
+Vue.use(VuejsDialog);
 
 const routes = [
     { path: '/', component: require('./components/Dashboard.vue').default }, 
     { path: '/employee', component: require('./components/master_files/employee/employee_index.vue').default }, 
     { path: '/employee/type', component: require('./components/master_files/employee/employee_type.vue').default }, 
-    { path: '/vehicle', component: require('./components/master_files/vehicle/vehicle_index.vue').default },     
+    { path: '/vehicle', component: require('./components/master_files/vehicle/vehicle_index.vue').default },  
+    { path: '/user',component:require('./components/operation/user/user_index.vue').default}   
   ]
     
   const router = new VueRouter({

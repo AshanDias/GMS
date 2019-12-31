@@ -11,14 +11,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
+// Route::get('/', function () {
+//     return view('home');
+// });
+
+
+Route::group(['middleware' => ['web']], function () {
 
 Auth::routes();
-Route::group(['middleware' => ['web']], function () {
-//Route::get('/home', 'HomeController@index')->name('home');
-Auth::routes();
+Route::get('/', 'HomeController@index')->name('home');
+
+//user CRUD
+Route::get('/populate/users/{count}','Auth\RegisterController@populateUsers');
+Route::post('/create/user','Auth\RegisterController@createUser');
+Route::post('/update/user','Auth\RegisterController@updateUser');
+Route::get('/delete/user/{id}','Auth\RegisterController@deleteUser');
 
 //Route::post('/logout/user','Auth\LoginController@logout');
 });

@@ -39,30 +39,59 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label>First Name</label>
-                  <input type="text" class="form-control" name id />
-                  <span>
-                    <p class="text-danger">This feild can't be empty</p>
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name
+                    id
+                    v-model="empName"
+                    placeholder="Employee name"
+                  />
+                  <span v-if="errors.name">
+                    <p class="text-danger">{{errors.name[0]}}</p>
                   </span>
                 </div>
                 <!-- /.form-group -->
               </div>
               <!-- /.col -->
               <div class="col-md-6">
-                <div class="form-group">
-                  <label>Last Name</label>
-                  <input type="text" class="form-control" name id />
+                <div class="form-group p-0 m-0">
+                  <label>Employee NIC</label>
+                  &nbsp;
+                  <input
+                    type="text"
+                    class="form-control"
+                    name
+                    id
+                    v-model="nic"
+                    placeholder="Employee NIC"
+                  />
+                  <span v-if="errors.nic">
+                    <p class="text-danger">{{errors.nic[0]}}</p>
+                  </span>
                 </div>
                 <!-- /.form-group -->
               </div>
               <!-- /.col -->
             </div>
             <!-- /.row -->
-
-            <div class="row form-group float-right">
-              <button type="button" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
-              <button type="button" class="btn btn-success btn-sm">Submit</button>
+            <div class="form-group float-right pt-4">
+              <button type="button" @click="resetForm" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
+              <button
+                v-if="isEdit == false"
+                type="button"
+                @click="createEmployee"
+                class="btn btn-success btn-sm"
+              >Submit</button>
+              <button
+                v-if="isEdit"
+                type="button"
+                @click="updateEmployee"
+                class="btn btn-primary btn-sm"
+              >Update</button>
             </div>
+
             <!-- /.form-group -->
           </div>
           <!-- /.card-body -->
@@ -100,79 +129,41 @@
             <table class="table table-head-fixed">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>User</th>
-                  <th>Date</th>
-                  <th>Status</th>
+                  <th class="text-center">#</th>
+                  <th class="text-center">Name</th>
+                  <th class="text-center">Employee NIC</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>183</td>
-                  <td>John Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-success">Approved</span>
+                <tr v-for="(Employee,index) in Employees.data" :key="index">
+                  <td class="text-center">{{Employee.id}}</td>
+                  <td class="text-center">{{Employee.name}}</td>
+                  <td class="text-center">{{Employee.nic}}</td>
+                  <td class="text-center">
+                    <span class="tag tag-success">{{Employee.status}}</span>
                   </td>
-                </tr>
-                <tr>
-                  <td>219</td>
-                  <td>Alexander Pierce</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-warning">Pending</span>
+                  <td class="text-center">
+                    <button
+                      type="button"
+                      @click="setEmployeeToUpdate(Employee)"
+                      class="btn btn-primary"
+                    >Edit</button>
+                    <button
+                      type="button"
+                      @click="deleteEmployee(Employee)"
+                      class="btn btn-danger"
+                    >Delete</button>
                   </td>
-                </tr>
-                <tr>
-                  <td>657</td>
-                  <td>Bob Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-primary">Approved</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>175</td>
-                  <td>Mike Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-danger">Denied</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>134</td>
-                  <td>Jim Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-success">Approved</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>494</td>
-                  <td>Victoria Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-warning">Pending</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>832</td>
-                  <td>Michael Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-primary">Approved</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>982</td>
-                  <td>Rocky Doe</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-danger">Denied</span>
-                  </td>
-                </tr>
+                </tr>                
               </tbody>
             </table>
+            <div v-if="load_data" class="d-flex justify-content-center mt-5">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
           </div>
           <!-- /.card-body -->
 
@@ -183,5 +174,170 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      id: "",
+      empName: "",
+      nic: "",
+      Employee_type: "",
+      paginate_count: 10,
+      errors: [],
+      Employees: [],
+      isEdit: false,
+      load_data: true
+    };
+  },
+  mounted() {
+    this.populateEmployee();
+  },
+  methods: {
+    resetForm() {
+      this.isEdit = false;
+      this.id = "";
+      this.empName = "";
+      this.nic = "";
+      this.Employee_type = "";
+      this.errors = [];
+      this.populateEmployee();
+    },
+
+    createEmployee() {
+      axios
+        .post("/create/employee", {
+          name: this.empName,
+          nic: this.nic, 
+        })
+        .then(res => {
+          if (res.status == 200) {
+            if (res.data == "Success") {
+              Vue.notify({
+                group: "foo",
+                type: "success",
+                title: "Important message",
+                text: "Employee create success!"
+              }),
+                this.resetForm();
+            } else {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: "Employee create fail!"
+              });
+            }
+          } else if (res.status == 500) {
+            Vue.notify({
+              group: "foo",
+              type: "warn",
+              title: "Important message",
+              text: "Server error !"
+            });
+          }
+        })
+        .catch(err => {
+          if (err.response.status == 422)
+            this.errors = err.response.data.errors;
+        });
+    },
+
+    populateEmployee(page = 1) {
+      axios.get("/populate/employees/" + this.paginate_count).then(res => {
+        if (res.status == 200) {
+          this.Employees = res.data;
+          console.log(this.Employees);
+          this.load_data = false;
+        }
+      });
+    },
+
+    setEmployeeToUpdate(Employee) {
+      this.isEdit = true;
+      this.id = Employee.id;
+      this.empName = Employee.name;
+      this.nic = Employee.nic;
+      console.log(Employee);
+    },
+
+    updateEmployee() {
+      axios
+        .post("/update/employee", {
+          id: this.id,
+          name: this.empName,
+          nic: this.nic, 
+        })
+        .then(res => {
+          console.log(res);
+          if (res.status == 200) {
+            if (res.data == "Success") {
+              Vue.notify({
+                group: "foo",
+                type: "success",
+                title: "Important message",
+                text: "Employee update success!"
+              }),
+                this.resetForm();
+            } else {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: "Employee update fail!"
+              });
+            }
+          } else if (res.status == 500) {
+            Vue.notify({
+              group: "foo",
+              type: "warn",
+              title: "Important message",
+              text: "Server error !"
+            });
+          }
+        })
+        .catch(err => {
+          if (err.response.status == 422)
+            this.errors = err.response.data.errors;
+        });
+    },
+
+    deleteEmployee(Employee) {
+      this.$confirm("Are you sure?").then(() => {
+        axios
+          .get("/delete/employee/" + Employee.id)
+          .then(res => {
+            console.log(res);
+            if (res.status == 200) {
+              if (res.data == "Success") {
+                Vue.notify({
+                  group: "foo",
+                  type: "success",
+                  title: "Important message",
+                  text: "Employee deleted success!"
+                }),
+                  this.resetForm();
+              } else {
+                Vue.notify({
+                  group: "foo",
+                  type: "warn",
+                  title: "Important message",
+                  text: "Employee delete fail!"
+                });
+              }
+            } else if (res.status == 500) {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: "Server error !"
+              });
+            }
+          })
+          .catch(err => {
+            if (err.response.status == 422)
+              this.errors = err.response.data.errors;
+          });
+      });
+    }
+  }
+};
 </script>

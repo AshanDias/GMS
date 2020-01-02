@@ -42,9 +42,16 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Name</label>
-                  <input type="text" class="form-control" name id />
-                  <span>
-                    <p class="text-danger">This feild can't be empty</p>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name
+                    id
+                    v-model="vname"
+                    placeholder="Vehicle name"
+                  />
+                  <span v-if="errors.name">
+                    <p class="text-danger">{{errors.name[0]}}</p>
                   </span>
                 </div>
                 <!-- /.form-group -->
@@ -53,19 +60,40 @@
               <div class="col-md-6">
                 <div class="form-group p-0 m-0">
                   <label>Vehicle No</label>
-&nbsp;
-                  <input type="text" class="form-control" name id />
+                  &nbsp;
+                  <input
+                    type="text"
+                    class="form-control"
+                    name
+                    id
+                    v-model="regNo"
+                    placeholder="Vehicle Registration No."
+                  />
+                  <span v-if="errors.reg_no">
+                    <p class="text-danger">{{errors.reg_no[0]}}</p>
+                  </span>
                 </div>
                 <!-- /.form-group -->
               </div>
               <!-- /.col -->
             </div>
             <!-- /.row -->
-
-            <div class="row form-group float-right">
-              <button type="button" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
-              <button type="button" class="btn btn-success btn-sm">Submit</button>
+            <div class="form-group float-right pt-4">
+              <button type="button" @click="resetForm" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
+              <button
+                v-if="isEdit == false"
+                type="button"
+                @click="createVehicle"
+                class="btn btn-success btn-sm"
+              >Submit</button>
+              <button
+                v-if="isEdit"
+                type="button"
+                @click="updateVehicle"
+                class="btn btn-primary btn-sm"
+              >Update</button>
             </div>
+
             <!-- /.form-group -->
           </div>
           <!-- /.card-body -->
@@ -103,79 +131,41 @@
             <table class="table table-head-fixed">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Vehicle No</th>
-                  <th>Status</th>
+                  <th class="text-center">#</th>
+                  <th class="text-center">Name</th>
+                  <th class="text-center">Vehicle No</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>183</td>
-                  <td>Test1</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-success">Approved</span>
+                <tr v-for="(vehicle,index) in vehicles.data" :key="index">
+                  <td class="text-center">{{vehicle.id}}</td>
+                  <td class="text-center">{{vehicle.name}}</td>
+                  <td class="text-center">{{vehicle.reg_no}}</td>
+                  <td class="text-center">
+                    <span class="tag tag-success">{{vehicle.status}}</span>
                   </td>
-                </tr>
-                <tr>
-                  <td>219</td>
-                  <td>Test2</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-warning">Pending</span>
+                  <td class="text-center">
+                    <button
+                      type="button"
+                      @click="setVehicleToUpdate(vehicle)"
+                      class="btn btn-primary"
+                    >Edit</button>
+                    <button
+                      type="button"
+                      @click="deleteVehicle(vehicle)"
+                      class="btn btn-danger"
+                    >Delete</button>
                   </td>
-                </tr>
-                <tr>
-                  <td>657</td>
-                  <td>Test3</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-primary">Approved</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>175</td>
-                  <td>Test 4</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-danger">Denied</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>134</td>
-                  <td>Test 5</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-success">Approved</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>494</td>
-                  <td>Test 6</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-warning">Pending</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>832</td>
-                  <td>Test 7</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-primary">Approved</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>982</td>
-                  <td>Test 8</td>
-                  <td>11-7-2014</td>
-                  <td>
-                    <span class="tag tag-danger">Denied</span>
-                  </td>
-                </tr>
+                </tr>                
               </tbody>
             </table>
+            <div v-if="load_data" class="d-flex justify-content-center mt-5">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
           </div>
           <!-- /.card-body -->
 
@@ -186,5 +176,173 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      id: "",
+      vname: "",
+      regNo: "",
+      Vehicle_type: "",
+      paginate_count: 10,
+      errors: [],
+      vehicles: [],
+      isEdit: false,
+      load_data: true
+    };
+  },
+  mounted() {
+    this.populateVehicle();
+  },
+  methods: {
+    resetForm() {
+      this.isEdit = false;
+      this.id = "";
+      this.vname = "";
+      this.regNo = "";
+      this.Vehicle_type = "";
+      this.errors = [];
+      this.populateVehicle();
+    },
+
+    createVehicle() {
+      axios
+        .post("/create/vehicle", {
+          name: this.vname,
+          reg_no: this.regNo,
+          vehicle_type: this.Vehicle_type
+        })
+        .then(res => {
+          if (res.status == 200) {
+            if (res.data == "Success") {
+              Vue.notify({
+                group: "foo",
+                type: "success",
+                title: "Important message",
+                text: "Vehicle create success!"
+              }),
+                this.resetForm();
+            } else {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: "Vehicle create fail!"
+              });
+            }
+          } else if (res.status == 500) {
+            Vue.notify({
+              group: "foo",
+              type: "warn",
+              title: "Important message",
+              text: "Server error !"
+            });
+          }
+        })
+        .catch(err => {
+          if (err.response.status == 422)
+            this.errors = err.response.data.errors;
+        });
+    },
+
+    populateVehicle(page = 1) {
+      axios.get("/populate/vehicles/" + this.paginate_count).then(res => {
+        if (res.status == 200) {
+          this.vehicles = res.data;
+          console.log(this.vehicles);
+          this.load_data = false;
+        }
+      });
+    },
+
+    setVehicleToUpdate(Vehicle) {
+      this.isEdit = true;
+      this.id = Vehicle.id;
+      this.vname = Vehicle.name;
+      this.regNo = Vehicle.reg_no;
+      console.log(Vehicle);
+    },
+
+    updateVehicle() {
+      axios
+        .post("/update/vehicle", {
+          id: this.id,
+          name: this.vname,
+          reg_no: this.regNo,
+          Vehicle_type: this.Vehicle_type,
+          password: this.password
+        })
+        .then(res => {
+          console.log(res);
+          if (res.status == 200) {
+            if (res.data == "Success") {
+              Vue.notify({
+                group: "foo",
+                type: "success",
+                title: "Important message",
+                text: "Vehicle update success!"
+              }),
+                this.resetForm();
+            } else {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: "Vehicle update fail!"
+              });
+            }
+          } else if (res.status == 500) {
+            Vue.notify({
+              group: "foo",
+              type: "warn",
+              title: "Important message",
+              text: "Server error !"
+            });
+          }
+        })
+        .catch(err => {
+          if (err.response.status == 422)
+            this.errors = err.response.data.errors;
+        });
+    },
+
+    deleteVehicle(vehicle) {
+      this.$confirm("Are you sure?").then(() => {
+        axios
+          .get("/delete/vehicle/" + vehicle.id)
+          .then(res => {
+            console.log(res);
+            if (res.status == 200) {
+              if (res.data == "Success") {
+                Vue.notify({
+                  group: "foo",
+                  type: "success",
+                  title: "Important message",
+                  text: "Vehicle deleted success!"
+                }),
+                  this.resetForm();
+              } else {
+                Vue.notify({
+                  group: "foo",
+                  type: "warn",
+                  title: "Important message",
+                  text: "Vehicle delete fail!"
+                });
+              }
+            } else if (res.status == 500) {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: "Server error !"
+              });
+            }
+          })
+          .catch(err => {
+            if (err.response.status == 422)
+              this.errors = err.response.data.errors;
+          });
+      });
+    }
+  }
+};
 </script>

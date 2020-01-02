@@ -71,7 +71,7 @@
                     <p>Group Assign</p>
                   </a>
                 </li>
-                <li class="nav-item">                      
+                <li v-if="auth == 'super_admin'" class="nav-item">                      
                   <router-link to="/user" class="nav-link">
                    <i class="nav-icon fas fa-user-shield"></i>
                     <p>User</p>
@@ -145,5 +145,7 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  props:["auth"]
+};
 </script>

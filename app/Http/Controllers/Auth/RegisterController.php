@@ -107,22 +107,40 @@ class RegisterController extends Controller
 
     public function updateUser(Request $request)
     {
-        $this->validate($request,[
-            'name'=> 'required|max:50',
-            'user_type'=>'required',
-           ]);
-           try {            
-                         
-            $user = User::find($request->id);
-            $user->name =  $request->name;
-            $user->user_type = $request->user_type;
-            $result = $user->save();
-    
-            if($result)
-                    return "Success";
-            else
-                    return "Fail";
-    
+        try {    
+                if($request->password != '')
+                {
+                    $this->validate($request,[
+                        'name'=> 'required|max:50',
+                        'user_type'=>'required',
+                        'password'=>'required|min:8'
+                    ]);
+                            
+                                    
+                        $user = User::find($request->id);
+                        $user->name =  $request->name;
+                        $user->user_type = $request->user_type;
+                        $user->password = Hash::make($request->password);
+                        $result = $user->save();
+                }
+                else
+                {
+                    $this->validate($request,[
+                        'name'=> 'required|max:50',
+                        'user_type'=>'required', 
+                    ]);       
+                                    
+                        $user = User::find($request->id);
+                        $user->name =  $request->name;
+                        $user->user_type = $request->user_type;                        
+                        $result = $user->save();
+                }
+            
+                    if($result)
+                            return "Success";
+                    else
+                            return "Fail";
+                
            } catch (Exception $th) {
                 return $th;
            }

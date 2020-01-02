@@ -10,9 +10,14 @@ window.Vue = require('vue');
 import VueRouter from 'vue-router'
 import Notifications from 'vue-notification'
 import VuejsDialog from 'vuejs-dialog';
+import VueSimpleAlert from "vue-simple-alert";
+import Paginate from 'vuejs-paginate'
+
 Vue.use(VueRouter)
 Vue.use(Notifications)
 Vue.use(VuejsDialog);
+Vue.use(VueSimpleAlert);
+Vue.component('pagination', Paginate)
 
 const routes = [
     { path: '/', component: require('./components/Dashboard.vue').default }, 

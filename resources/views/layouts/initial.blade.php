@@ -33,7 +33,7 @@
 </head>
 <body>
     <div id="app">         
-     
+{{--      
        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -83,8 +83,8 @@
                     </ul>
                 </div>
             </div>
-        </nav>  
-        <main class="py-4">   
+        </nav>   --}}
+        <main class="py-0">   
             @yield('content')           
         </main>         
     </div>  

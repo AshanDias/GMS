@@ -41,10 +41,13 @@
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
+    
    <div class="wrapper">
-    <div id="app">         
+    <div id="app">     
+      
         <header-vue></header-vue>
-        <aside-vue></aside-vue>
+        <aside-vue
+        :auth={{json_encode(Auth::user()->user_type)}}></aside-vue>
         
         {{--  <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">

@@ -4,7 +4,7 @@
 <div class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="../../index2.html"><b>Admin</b>LTE</a>
+            <a href="/"><img alt="logo" src="{{ asset('dist/img/logo.png') }}" height="100" width="100"> </a>
         </div>
         <div class="card">
             <div class="card-body login-card-body">

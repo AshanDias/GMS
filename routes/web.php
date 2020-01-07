@@ -16,6 +16,7 @@
 // });
 
 
+
 Route::group(['middleware' => ['web']], function () {
 
 Auth::routes();

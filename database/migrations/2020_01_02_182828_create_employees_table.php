@@ -15,9 +15,16 @@ class CreateEmployeesTable extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('nic');
-            $table->tinyInteger('status')->default(1);
+            $table->string('first_name',50);
+            $table->string('last_name',50);
+            $table->bigInteger('employee_type_id')->unsigned();
+            $table->foreign('employee_type_id')->references('id')->on('employee_types');
+            $table->string('nic',10)->unique();
+            $table->string('telephone_no',15);
+            $table->bigInteger('employee_group_id')->unsigned();
+            $table->foreign('employee_group_id')->references('id')->on('employee_groups');
+            $table->bigInteger('status_id')->unsigned();
+            $table->foreign('status_id')->references('id')->on('statuses');
             $table->timestamps();
         });
     }

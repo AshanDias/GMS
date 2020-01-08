@@ -71,7 +71,7 @@
                     <p>Group Assign</p>
                   </a>
                 </li>
-                <li v-if="auth == 'super_admin'" class="nav-item">                      
+                <li v-if="auth == '1'" class="nav-item">                      
                   <router-link to="/user" class="nav-link">
                    <i class="nav-icon fas fa-user-shield"></i>
                     <p>User</p>

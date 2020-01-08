@@ -40,15 +40,19 @@ class EmployeeController extends Controller
    public function store(Request $request)
    {           
        $this->validate($request,[
-           'name'=>'required|max:50|unique:employees',
-           'nic'=>'required|max:15|unique:employees'
+           'first_name'=>'required|max:50',
+           'last_name'=>'required|max:50',
+           'nic'=>'required|max:15|unique:employee_details',
+           'telephone_no'=>'required|max:15|unique:employee_details',
        ]);
 
        try {
 
            $employee = new Employee();
-           $employee->name = $request->name;
+           $employee->first_name = $request->first_name;
+           $employee->last_name = $request->last_name;
            $employee->nic = $request->nic;
+           $employee->telephone_no = $request->telephone_no;
            $result = $employee->save();
 
            if($result)
@@ -92,13 +96,17 @@ class EmployeeController extends Controller
    public function update(Request $request)
    {
        $this->validate($request,[
-        'name'=>'required|max:50|unique:eployees',
-        'nic'=>'required|max:15|unique:employees'
+        'first_name'=>'required|max:50',
+        'last_name'=>'required|max:50',
+        'nic'=>'required|max:15|unique:employee_details',
+        'telephone_no'=>'required|max:15|unique:employee_details',
        ]);
       try {
-        $vehicle = Employee::find($request->id);
-        $employee->name = $request->name;
+        $employee = Employee::find($request->id);
+        $employee->first_name = $request->first_name;
+        $employee->last_name = $request->last_name;
         $employee->nic = $request->nic;
+        $employee->telephone_no = $request->telephone_no;
         $result = $employee->save();
 
        if($result)

@@ -12,12 +12,14 @@ import Notifications from 'vue-notification'
 import VuejsDialog from 'vuejs-dialog';
 import VueSimpleAlert from "vue-simple-alert";
 import Paginate from 'vuejs-paginate'
-
+import Multiselect from 'vue-multiselect'
+ 
 Vue.use(VueRouter)
 Vue.use(Notifications)
 Vue.use(VuejsDialog);
 Vue.use(VueSimpleAlert);
 Vue.component('pagination', Paginate)
+Vue.component('multiselect', Multiselect)
 
 const routes = [
     { path: '/', component: require('./components/Dashboard.vue').default }, 

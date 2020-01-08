@@ -15,8 +15,8 @@ class CreateFeadbacksTable extends Migration
     {
         Schema::create('feadbacks', function (Blueprint $table) {
             $table->bigIncrements('id'); 
-            $table->bigInteger('customer_id')->unsigned();
-            $table->foreign('customer_id')->references('id')->on('customers');
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->bigInteger('vehicle_id')->unsigned();
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->nullable();
             $table->string('comment',255);

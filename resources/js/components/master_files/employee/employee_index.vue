@@ -6,7 +6,9 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1><i class="nav-icon fas fa-user-friends"></i>&nbsp;Employee</h1>
+              <h1>
+                <i class="nav-icon fas fa-user-friends"></i>&nbsp;Employee
+              </h1>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
@@ -39,36 +41,88 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label>Name</label>
+                  <label>First Name</label>
                   <input
                     type="text"
                     class="form-control"
                     name
                     id
-                    v-model="empName"
+                    required
+                    v-model="empFName"
                     placeholder="Employee name"
                   />
                   <span v-if="errors.name">
                     <p class="text-danger">{{errors.name[0]}}</p>
                   </span>
                 </div>
-                <!-- /.form-group -->
-              </div>
-              <!-- /.col -->
-              <div class="col-md-6">
                 <div class="form-group p-0 m-0">
-                  <label>Employee NIC</label>
+                  <label>Type</label>
+                  &nbsp;
+                  <div>
+                    <multiselect
+                      v-model="value"
+                      deselect-label="Can't remove this value"
+                      track-by="id"
+                      label="name"
+                      placeholder="Select one"
+                      :options="options"
+                      :searchable="false"
+                      :allow-empty="false"
+                      required
+                    ></multiselect>
+                  </div>
+                  <span v-if="errors.nic">
+                    <p class="text-danger">{{errors.nic[0]}}</p>
+                  </span>
+                </div>
+                <div class="form-group p-0 m-0">
+                  <label>NIC</label>
                   &nbsp;
                   <input
                     type="text"
                     class="form-control"
                     name
                     id
+                    required
                     v-model="nic"
                     placeholder="Employee NIC"
                   />
                   <span v-if="errors.nic">
                     <p class="text-danger">{{errors.nic[0]}}</p>
+                  </span>
+                </div>
+                <!-- /.form-group -->
+              </div>
+              <!-- /.col -->
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name
+                    id
+                    required
+                    v-model="empLName"
+                    placeholder="Employee name"
+                  />
+                  <span v-if="errors.name">
+                    <p class="text-danger">{{errors.name[0]}}</p>
+                  </span>
+                </div>
+                <div class="form-group">
+                  <label>Telephone No</label>
+                  <input
+                    type="numbers"
+                    class="form-control"
+                    name
+                    id
+                    required
+                    v-model="teleNo"
+                    placeholder="Employee name"
+                  />
+                  <span v-if="errors.name">
+                    <p class="text-danger">{{errors.name[0]}}</p>
                   </span>
                 </div>
                 <!-- /.form-group -->
@@ -156,14 +210,14 @@
                       class="btn btn-danger"
                     >Delete</button>
                   </td>
-                </tr>                
+                </tr>
               </tbody>
             </table>
             <div v-if="load_data" class="d-flex justify-content-center mt-5">
-                  <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>
-                </div>
+              <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
           </div>
           <!-- /.card-body -->
 
@@ -178,14 +232,18 @@ export default {
   data() {
     return {
       id: "",
-      empName: "",
+      empFName: "",
+      empLName: "",
       nic: "",
+      teleNo: "",
       Employee_type: "",
       paginate_count: 10,
       errors: [],
       Employees: [],
+      options: [{ id: 4, name: "Driver" }, { id: 5, name: "Worker" }],
+      value: "",
       isEdit: false,
-      load_data: true
+      load_data: false
     };
   },
   mounted() {
@@ -195,9 +253,8 @@ export default {
     resetForm() {
       this.isEdit = false;
       this.id = "";
-      this.empName = "";
-      this.nic = "";
-      this.Employee_type = "";
+      (this.empFName = ""), (this.empLName = ""), (this.nic = "");
+      (this.teleNo = ""), (this.Employee_type = "");
       this.errors = [];
       this.populateEmployee();
     },
@@ -205,8 +262,10 @@ export default {
     createEmployee() {
       axios
         .post("/create/employee", {
-          name: this.empName,
-          nic: this.nic, 
+          first_name: this.empFName,
+          last_name: this.empLName,
+          nic: this.nic,
+          telephone_no: this.teleNo
         })
         .then(res => {
           if (res.status == 200) {
@@ -254,8 +313,10 @@ export default {
     setEmployeeToUpdate(Employee) {
       this.isEdit = true;
       this.id = Employee.id;
-      this.empName = Employee.name;
+      this.empFName = Employee.empFName;
+      this.empLName = Employee.empLName;
       this.nic = Employee.nic;
+      this.teleNo = Employee.telephone_no;
       console.log(Employee);
     },
 
@@ -263,8 +324,10 @@ export default {
       axios
         .post("/update/employee", {
           id: this.id,
-          name: this.empName,
-          nic: this.nic, 
+          first_name: this.empFame,
+          last_name: this.empLName,
+          nic: this.nic,
+          telephone_no: this.teleNo
         })
         .then(res => {
           console.log(res);

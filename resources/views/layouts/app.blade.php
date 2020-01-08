@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     
@@ -47,7 +47,7 @@
       
         <header-vue></header-vue>
         <aside-vue
-        :auth={{json_encode(Auth::user()->user_type)}}></aside-vue>
+        :auth={{json_encode(Auth::user()->user_type_id)}}></aside-vue>
         
         {{--  <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">

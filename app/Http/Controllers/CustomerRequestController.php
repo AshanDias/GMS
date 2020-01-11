@@ -66,6 +66,9 @@ class CustomerRequestController extends Controller
          try {
             $customerRequest = new CustomerRequest();
             $customerRequest->user_id =  $request->user_id;
+            $customerRequest->customer_name = $request->customer_name;
+            $customerRequest->email = $request->email;
+            $customerRequest->area_id = $request->area_id;
             $customerRequest->vehicle_id = $request->vehicle_id;
             $customerRequest->longitude = $request->longitude;
             $customerRequest->latitude =  $request->latitude;

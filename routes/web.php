@@ -45,11 +45,13 @@ Route::group(['middleware' => ['web']], function () {
 
     //Collector Group
     Route::get('/collector/groups/{count}','EmployeeGroupController@index');
-
+    
     Route::get('/customer/request/{count}','CustomerRequestController@index');
+   
  
 });
  
 Route::post('/customer/request','CustomerRequestController@store');
+Route::get('/customer/all/request','CustomerRequestController@populateData');
 //Route::get('/customer/request/{count}','CustomerRequestController@index');
 

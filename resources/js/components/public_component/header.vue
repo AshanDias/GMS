@@ -38,13 +38,19 @@
 
       <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown user-menu">
-          <a href="" @click="logout" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <a
+            href
+            @click="logout"
+            class="nav-link dropdown-toggle"
+            data-toggle="dropdown"
+            aria-expanded="false"
+          >
             <img
               src="dist/img/user2-160x160.jpg"
               class="user-image img-circle elevation-2"
               alt="User Image"
             />
-            Sign Out 
+            Sign Out
           </a>
         </li>
       </ul>
@@ -61,16 +67,22 @@ export default {
   }),
   methods: {
     logout: function() {
-      axios
-        .post("logout")
-        .then(response => {
-          if (response.status === 302 || 401) {
-           window.location.href = "/login";  
-          } else {
-            // throw error and go to catch block
-          }
-        })
-        .catch(error => {});
+     
+      this.$confirm("Are you sure?").then(() => {
+        axios
+          .post("logout")
+          .then(response => {
+              
+            if (response.status === 302 || 401) {
+              
+            } else {
+              // throw error and go to catch block
+            }
+          })
+          .catch(error => {
+             location.reload();
+          });
+      });
     }
   }
 };

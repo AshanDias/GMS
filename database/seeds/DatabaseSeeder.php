@@ -60,5 +60,39 @@ class DatabaseSeeder extends Seeder
             'status' => 'Finish',            
         ]); 
 
+
+        DB::table('areas')->insert([
+            'name' => 'Mirihana',            
+        ]); 
+        DB::table('areas')->insert([
+            'name' => 'Madivela',            
+        ]); 
+        DB::table('areas')->insert([
+            'name' => 'Thalawathugoda',            
+        ]); 
+        DB::table('areas')->insert([
+            'name' => 'Kottawa',            
+        ]); 
+        DB::table('areas')->insert([
+            'name' => 'Pannipitiya',            
+        ]); 
+        DB::table('areas')->insert([
+            'name' => 'Maharagama',            
+        ]); 
+        DB::table('areas')->insert([
+            'name' => 'Godagamuwa',            
+        ]); 
+
+        DB::table('vehicle_types')->insert([
+            'type_code' => 'tractor',  
+            'status_id'=>1          
+        ]); 
+
+        DB::table('categories')->insert([
+            'name' => 'Normal',            
+        ]); 
+        
+
+
     }
 }

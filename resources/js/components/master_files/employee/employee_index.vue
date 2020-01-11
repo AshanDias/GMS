@@ -51,35 +51,35 @@
                     v-model="empFName"
                     placeholder="Employee name"
                   />
-                  <span v-if="errors.name">
-                    <p class="text-danger">{{errors.name[0]}}</p>
+                  <span v-if="errors.first_name">
+                    <p class="text-danger">{{errors.first_name[0]}}</p>
                   </span>
                 </div>
-                <div class="form-group p-0 m-0">
+                <div class="form-group">
                   <label>Type</label>
                   &nbsp;
                   <div>
                     <multiselect
-                      v-model="value"
+                      v-model="selectedEmployeeType"
                       deselect-label="Can't remove this value"
                       track-by="id"
                       label="name"
                       placeholder="Select one"
-                      :options="options"
+                      :options="EmployeeType"
                       :searchable="false"
                       :allow-empty="false"
                       required
                     ></multiselect>
                   </div>
-                  <span v-if="errors.nic">
-                    <p class="text-danger">{{errors.nic[0]}}</p>
+                  <span v-if="errors.employee_type_id">
+                    <p class="text-danger">{{errors.employee_type_id[0]}}</p>
                   </span>
                 </div>
-                <div class="form-group p-0 m-0">
+                <div class="form-group">
                   <label>NIC</label>
                   &nbsp;
                   <input
-                    type="text"
+                    type="number"
                     class="form-control"
                     name
                     id
@@ -106,14 +106,14 @@
                     v-model="empLName"
                     placeholder="Employee name"
                   />
-                  <span v-if="errors.name">
-                    <p class="text-danger">{{errors.name[0]}}</p>
+                  <span v-if="errors.last_name">
+                    <p class="text-danger">{{errors.last_name[0]}}</p>
                   </span>
                 </div>
                 <div class="form-group">
                   <label>Telephone No</label>
                   <input
-                    type="numbers"
+                    type="number"
                     class="form-control"
                     name
                     id
@@ -121,11 +121,29 @@
                     v-model="teleNo"
                     placeholder="Employee name"
                   />
-                  <span v-if="errors.name">
-                    <p class="text-danger">{{errors.name[0]}}</p>
+                  <span v-if="errors.telephone_no">
+                    <p class="text-danger">{{errors.telephone_no[0]}}</p>
                   </span>
                 </div>
                 <!-- /.form-group -->
+                  <div class="form-group">
+                  <label>Status</label>
+                  &nbsp;
+                  <div>
+                    <multiselect
+                      v-model="selectedEmployeeStatus"
+                      deselect-label="Can't remove this value"
+                      track-by="id"
+                      label="name"
+                      placeholder="Select one"
+                      :options="EmployeeStatus"
+                      :searchable="false"
+                      :allow-empty="false"
+                      required
+                    ></multiselect>
+                  </div>
+                 
+                </div>
               </div>
               <!-- /.col -->
             </div>
@@ -193,10 +211,11 @@
               <tbody>
                 <tr v-for="(Employee,index) in Employees.data" :key="index">
                   <td class="text-center">{{Employee.id}}</td>
-                  <td class="text-center">{{Employee.name}}</td>
-                  <td class="text-center">{{Employee.nic}}</td>
+                  <td class="text-center">{{Employee.first_name}} {{Employee.last_name}}</td>
+                  <td class="text-center">{{Employee.nic}}</td>                  
                   <td class="text-center">
-                    <span class="tag tag-success">{{Employee.status}}</span>
+                   <span v-if="Employee.status_id == 1" class="badge badge-success">{{Employee.status}}</span> 
+                   <span v-if="Employee.status_id == 2" class="badge badge-danger">{{Employee.status}}</span>
                   </td>
                   <td class="text-center">
                     <button
@@ -234,16 +253,18 @@ export default {
       id: "",
       empFName: "",
       empLName: "",
-      nic: "",
-      teleNo: "",
+      nic: null,
+      teleNo: null,
       Employee_type: "",
       paginate_count: 10,
       errors: [],
       Employees: [],
-      options: [{ id: 4, name: "Driver" }, { id: 5, name: "Worker" }],
-      value: "",
+      EmployeeType: [{ id: 4, name: "Driver" }, { id: 5, name: "Worker" }],
+      selectedEmployeeType: {id: 4, name: "Driver" },
+      EmployeeStatus: [{ id: 1, name: "Active" }, { id: 2, name: "Deactive" }],
+      selectedEmployeeStatus: { id: 1, name: "Active" },
       isEdit: false,
-      load_data: false
+      load_data: true,
     };
   },
   mounted() {
@@ -265,7 +286,9 @@ export default {
           first_name: this.empFName,
           last_name: this.empLName,
           nic: this.nic,
-          telephone_no: this.teleNo
+          telephone_no: this.teleNo,
+          employee_type_id:this.selectedEmployeeType.id,
+          status_id:this.selectedEmployeeStatus.id
         })
         .then(res => {
           if (res.status == 200) {
@@ -313,10 +336,12 @@ export default {
     setEmployeeToUpdate(Employee) {
       this.isEdit = true;
       this.id = Employee.id;
-      this.empFName = Employee.empFName;
-      this.empLName = Employee.empLName;
+      this.empFName = Employee.first_name;
+      this.empLName = Employee.last_name;
       this.nic = Employee.nic;
       this.teleNo = Employee.telephone_no;
+      this.selectedEmployeeType.id = Employee.employee_type_id;
+      this.selectedEmployeeStatus.id = Employee.status_id;
       console.log(Employee);
     },
 
@@ -324,10 +349,12 @@ export default {
       axios
         .post("/update/employee", {
           id: this.id,
-          first_name: this.empFame,
+          first_name: this.empFName,
           last_name: this.empLName,
           nic: this.nic,
-          telephone_no: this.teleNo
+          telephone_no: this.teleNo,
+          employee_type_id:this.selectedEmployeeType.id,
+          status_id:this.selectedEmployeeStatus.id
         })
         .then(res => {
           console.log(res);

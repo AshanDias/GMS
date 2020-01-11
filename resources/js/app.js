@@ -26,7 +26,9 @@ const routes = [
     { path: '/employee', component: require('./components/master_files/employee/employee_index.vue').default }, 
     { path: '/employee/type', component: require('./components/master_files/employee/employee_type.vue').default }, 
     { path: '/vehicle', component: require('./components/master_files/vehicle/vehicle_index.vue').default },  
-    { path: '/user',component:require('./components/operation/user/user_index.vue').default}   
+    { path: '/user',component:require('./components/operation/user/user_index.vue').default},   
+    { path: '/customer/request', component:require('./components/operation/request/customer_request.vue').default},
+    { path: '/collector/group', component:require('./components/operation/collector_group/group_index.vue').default}
   ]
     
   const router = new VueRouter({

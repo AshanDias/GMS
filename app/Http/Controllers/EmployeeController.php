@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Employee;
 use Illuminate\Http\Request;
+use DB;
 
 class EmployeeController extends Controller
 {    /**
@@ -28,7 +29,9 @@ class EmployeeController extends Controller
 
    public function populateEmployee($count)
    {
-       return Employee::paginate($count);
+       return DB::table('employees')
+       ->join('statuses','statuses.id','employees.status_id')
+       ->select('employees.*','statuses.status')->paginate();
    }
 
    /**
@@ -38,12 +41,14 @@ class EmployeeController extends Controller
     * @return \Illuminate\Http\Response
     */
    public function store(Request $request)
-   {           
+   {   
+             
        $this->validate($request,[
            'first_name'=>'required|max:50',
            'last_name'=>'required|max:50',
-           'nic'=>'required|max:15|unique:employee_details',
-           'telephone_no'=>'required|max:15|unique:employee_details',
+           'nic'=>'required|max:11|unique:employees',
+           'employee_type_id'=>'required',
+           'telephone_no'=>'required',
        ]);
 
        try {
@@ -53,6 +58,8 @@ class EmployeeController extends Controller
            $employee->last_name = $request->last_name;
            $employee->nic = $request->nic;
            $employee->telephone_no = $request->telephone_no;
+           $employee->employee_type_id = $request->employee_type_id;
+           $employee->status_id = $request->status_id;
            $result = $employee->save();
 
            if($result)
@@ -98,15 +105,18 @@ class EmployeeController extends Controller
        $this->validate($request,[
         'first_name'=>'required|max:50',
         'last_name'=>'required|max:50',
-        'nic'=>'required|max:15|unique:employee_details',
-        'telephone_no'=>'required|max:15|unique:employee_details',
+        'nic'=>'required|max:11|unique:employees,nic,'.$request->id,
+        'employee_type_id'=>'required',
+        'telephone_no'=>'required',
        ]);
       try {
-        $employee = Employee::find($request->id);
+        $employee = Employee::findOrFail($request->id);
         $employee->first_name = $request->first_name;
         $employee->last_name = $request->last_name;
         $employee->nic = $request->nic;
         $employee->telephone_no = $request->telephone_no;
+        $employee->employee_type_id = $request->employee_type_id;
+        $employee->status_id = $request->status_id;
         $result = $employee->save();
 
        if($result)

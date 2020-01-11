@@ -54,16 +54,16 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <router-link to="/customer/request" class="nav-link">
                     <i class="nav-icon fas fa-wave-square"></i>
                     <p>Requests</p>
-                  </a>
+                  </router-link>                  
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="fas fa-user-friends nav-icon"></i>
+                  <router-link to="/collector/group" class="nav-link">
+                   <i class="fas fa-user-friends nav-icon"></i>
                     <p>Collector Groups</p>
-                  </a>
+                  </router-link>                
                 </li>
                 <li class="nav-item">
                   <a href="#" class="nav-link">

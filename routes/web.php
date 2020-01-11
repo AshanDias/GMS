@@ -16,11 +16,11 @@
 // });
 
 
-Auth::routes(['verify' => true]);
+//Auth::routes(['verify' => true]);
 Auth::routes();
-//Route::group(['middleware' => ['web']], function () { 
+Route::group(['middleware' => ['web']], function () { 
 
-Route::group(['middleware' => 'verified'], function () {  
+//Route::group(['middleware' => 'verified'], function () {  
 
     Route::get('/', 'HomeController@index');
 
@@ -32,17 +32,24 @@ Route::group(['middleware' => 'verified'], function () {
 
     //vehicle CRUD
     Route::get('/populate/vehicles/{count}','VehicleController@populateVehicle');
+    Route::get('/populate/all/data/{count}','VehicleController@index');
     Route::post('/create/vehicle','VehicleController@store');
     Route::post('/update/vehicle','VehicleController@update');
     Route::get('/delete/vehicle/{id}','VehicleController@destroy');
 
-    //vehicle CRUD
+    //Employee CRUD
     Route::get('/populate/employees/{count}','EmployeeController@populateEmployee');
     Route::post('/create/employee','EmployeeController@store');
     Route::post('/update/employee','EmployeeController@update');
     Route::get('/delete/employee/{id}','EmployeeController@destroy');
 
-    //Route::post('/logout/user','Auth\LoginController@logout');
-});
+    //Collector Group
+    Route::get('/collector/groups/{count}','EmployeeGroupController@index');
 
-//});
+    Route::get('/customer/request/{count}','CustomerRequestController@index');
+ 
+});
+ 
+Route::post('/customer/request','CustomerRequestController@store');
+//Route::get('/customer/request/{count}','CustomerRequestController@index');
+

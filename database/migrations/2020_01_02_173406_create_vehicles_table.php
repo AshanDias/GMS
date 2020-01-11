@@ -17,7 +17,7 @@ class CreateVehiclesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name',50);
             $table->string('reg_no',50);
-            $table->string('manf_year');
+            $table->string('manf_year')->nullable();
             $table->string('reg_year');
             $table->bigInteger('vehicle_type_id')->unsigned();
             $table->foreign('vehicle_type_id')->references('id')->on('vehicle_types');

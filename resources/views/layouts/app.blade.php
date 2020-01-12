@@ -6,8 +6,8 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('dist/img/favicon-32x32.png') }}">
+    <title>{{ config('app.name', 'GMS') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     
@@ -47,7 +47,7 @@
       
         <header-vue></header-vue>
         <aside-vue
-        :auth={{json_encode(Auth::user()->user_type)}}></aside-vue>
+        :auth={{json_encode(Auth::user()->user_type_id)}}></aside-vue>
         
         {{--  <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">

@@ -5,7 +5,7 @@
       <!-- Brand Logo -->
       <a href="/" class="brand-link">
         <img
-          src="dist/img/AdminLTELogo.png"
+          src="dist/img/logo.png"
           alt="AdminLTE Logo"
           class="brand-image img-circle elevation-3"
           style="opacity: .8"
@@ -54,16 +54,16 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <router-link to="/customer/request" class="nav-link">
                     <i class="nav-icon fas fa-wave-square"></i>
                     <p>Requests</p>
-                  </a>
+                  </router-link>                  
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="fas fa-user-friends nav-icon"></i>
+                  <router-link to="/collector/group" class="nav-link">
+                   <i class="fas fa-user-friends nav-icon"></i>
                     <p>Collector Groups</p>
-                  </a>
+                  </router-link>                
                 </li>
                 <li class="nav-item">
                   <a href="#" class="nav-link">
@@ -71,7 +71,7 @@
                     <p>Group Assign</p>
                   </a>
                 </li>
-                <li v-if="auth == 'super_admin'" class="nav-item">                      
+                <li v-if="auth == '1'" class="nav-item">                      
                   <router-link to="/user" class="nav-link">
                    <i class="nav-icon fas fa-user-shield"></i>
                     <p>User</p>

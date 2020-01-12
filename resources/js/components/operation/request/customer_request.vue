@@ -61,8 +61,9 @@
                   <th class="text-center">Email</th>
                   <th class="text-center">Area</th>                   	
                   <th class="text-center">Address</th>
+                  <th class="text-center">Address 2</th>
+                  <th class="text-center">Address 3</th>
                   <th class="text-center">Category</th> 
-                  <th class="text-center">Vehicle Reg No</th> 
                   <th class="text-center">Status</th>
                   <th class="text-center">Action</th>
                 </tr>
@@ -73,12 +74,16 @@
                   <td class="text-center">{{request.customer_name}}</td>
                   <td class="text-center">{{request.email}}</td>
                   <td class="text-center">{{request.area_name}}</td>
-                  <td class="text-center">{{request.address}}</td>
+                  <td v-if="request.address_1 != 'null'" class="text-center">{{request.address_1}}</td>
+                   <td v-else class="text-center">-</td>
+                    <td v-if="request.address_2 != 'null'" class="text-center">{{request.address_2}}</td>
+                   <td v-else class="text-center">-</td>
+                  <td v-if="request.address_3 != 'null'" class="text-center">{{request.address_3}}</td>
+                   <td v-else class="text-center">-</td>
                   <td class="text-center">{{request.category_name}}</td>
-                  <td class="text-center">{{request.reg_no}}</td>
                   <td class="text-center">{{request.status}}</td>
                   <td class="text-center">                  
-                    <button type="button" @click="deleteUser(request)" class="btn btn-danger">Delete</button>
+                    <button type="button"  class="btn btn-danger">Delete</button>
                   </td>
                 </tr>
               </tbody>

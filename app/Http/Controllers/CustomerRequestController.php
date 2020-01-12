@@ -17,10 +17,9 @@ class CustomerRequestController extends Controller
     {
        return DB::table('customer_requests')
        ->join('areas','areas.id','customer_requests.area_id')
-       ->join('vehicles','vehicles.id','customer_requests.vehicle_id')
        ->join('categories','categories.id','customer_requests.category_id')
        ->join('statuses','statuses.id','customer_requests.status_id')
-       ->select('customer_requests.*','areas.name as area_name','vehicles.name as vehicle_name','vehicles.reg_no','categories.name as category_name','statuses.status')
+       ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status')
        ->paginate($count);
     }
 
@@ -28,10 +27,9 @@ class CustomerRequestController extends Controller
     {
         return DB::table('customer_requests')
        ->join('areas','areas.id','customer_requests.area_id')
-       ->join('vehicles','vehicles.id','customer_requests.vehicle_id')
        ->join('categories','categories.id','customer_requests.category_id')
        ->join('statuses','statuses.id','customer_requests.status_id')
-       ->select('customer_requests.*','areas.name','vehicles.name','vehicles.reg_no','categories.name','statuses.status')
+       ->select('customer_requests.*','areas.name','categories.name','statuses.status')
        ->get();
     }
 
@@ -53,15 +51,14 @@ class CustomerRequestController extends Controller
      */
     public function store(Request $request)
     { 
-        $this->validate($request,[
-            'user_id'=>'required|max:50',
-            'vehicle_id'=>'required|max:50',
-            'longitude'=>'required',
-            'latitude'=>'required',
-            'address'=>'required',
-            'category_id'=>'required',
-            'status_id'=>'required',
-           ]);
+        
+        // $this->validate($request,[
+        //     'user_id'=>'required|max:50',
+        //     'longitude'=>'required',
+        //     'latitude'=>'required',
+        //     'address'=>'required',
+        //     'category_id'=>'required'
+        //   ]);
 
          try {
             $customerRequest = new CustomerRequest();
@@ -69,12 +66,16 @@ class CustomerRequestController extends Controller
             $customerRequest->customer_name = $request->customer_name;
             $customerRequest->email = $request->email;
             $customerRequest->area_id = $request->area_id;
-            $customerRequest->vehicle_id = $request->vehicle_id;
+          //  $customerRequest->vehicle_id = $request->vehicle_id;
+            $customerRequest->description =  $request->description;
+            $customerRequest->tele_no =  $request->tele_no;
             $customerRequest->longitude = $request->longitude;
             $customerRequest->latitude =  $request->latitude;
-            $customerRequest->address =  $request->address;
+            $customerRequest->address_1 =  $request->address_1;
+            $customerRequest->address_2 =  $request->address_2;
+            $customerRequest->address_3 =  $request->address_3;
             $customerRequest->category_id =  $request->category_id;
-            $customerRequest->status_id =  $request->status_id;
+            $customerRequest->status_id =3;
             $result = $customerRequest->save();
  
              if($result)

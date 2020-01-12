@@ -17,6 +17,12 @@ class CategoryController extends Controller
         
     }
 
+    public function populateCategory()
+    {
+        return Category::select('id','name')->get();
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use App\UserType;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -74,21 +75,21 @@ class RegisterController extends Controller
 
     public function createUser(Request $request)
     {
-        
+       // return $request;
        $this->validate($request,[
         'name'=> 'required|max:50',
         'email'=> 'required|max:225|unique:users',
-        'user_type'=>'required',
+        'user_type_id' => 'required',
         'password'=>'required|min:8'
        ]);
        try {
            
-        $result = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'user_type'=>$request->user_type,
-            'password' => Hash::make($request->password),
-        ]);
+        $User = new User();
+        $User->name = $request->name;
+        $User->email = $request->email;
+        $User->user_type_id = $request->user_type_id;
+        $User->password = Hash::make($request->password);
+        $result = $User->save();
 
         if($result)
                 return "Success";
@@ -100,40 +101,61 @@ class RegisterController extends Controller
        }
     }
 
+    //User Register
+    public function populateUsersData($count)
+    {
+       $userType = UserType::select('id','name')->where('id',1)->orWhere('id',2)->get();
+       $user =  DB::table('users')
+       ->join('user_types','user_types.id','users.user_type_id')
+       ->select('users.*','user_types.name as type_name')
+       ->paginate($count);
+       
+
+       return array("user_types"=>$userType,"users"=>$user);
+    }
+
+    //Employee
     public function populateUsers($count)
     {
-        return User::paginate($count);
+        return $user =  DB::table('users')
+        ->join('user_types','user_types.id','users.user_type_id')
+        ->select('users.*','user_types.name as type_name')
+        ->paginate($count);
     }
 
     public function updateUser(Request $request)
     {
+       
         try {    
-                if($request->password != '')
-                {
+                if($request->password != null)
+                {        
                     $this->validate($request,[
                         'name'=> 'required|max:50',
-                        'user_type'=>'required',
+                        'email'=> 'required|max:225|unique:users,email,'.$request->id,
+                        'user_type_id' => 'required',
                         'password'=>'required|min:8'
-                    ]);
-                            
-                                    
+                       ]);
+                      
                         $user = User::find($request->id);
-                        $user->name =  $request->name;
-                        $user->user_type = $request->user_type;
-                        $user->password = Hash::make($request->password);
-                        $result = $user->save();
+                        $User->name = $request->name;
+                        $User->email = $request->email;
+                        $User->user_type_id = $request->user_type_id;
+                        $User->password = Hash::make($request->password);
+                        $result = $User->save();
                 }
                 else
                 {
                     $this->validate($request,[
                         'name'=> 'required|max:50',
-                        'user_type'=>'required', 
-                    ]);       
+                        'email'=> 'required|max:225|unique:users,email,'.$request->id,
+                        'user_type_id' => 'required'
+                       ]);      
                                     
-                        $user = User::find($request->id);
-                        $user->name =  $request->name;
-                        $user->user_type = $request->user_type;                        
-                        $result = $user->save();
+                       $User = User::find($request->id);
+                       $User->name = $request->name;
+                       $User->email = $request->email;
+                       $User->user_type_id = $request->user_type_id; 
+                       $result = $User->save();
                 }
             
                     if($result)

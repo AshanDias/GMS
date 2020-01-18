@@ -79,15 +79,14 @@ class CustomerRequestController extends Controller
             $customerRequest->category_id =  $request->category_id;
             $customerRequest->status_id =3;
             $result = $customerRequest->save();
- 
+            
              if($result)
-                $customerRequest;
-                 //return 1;
+                 return $customerRequest;
              else
                  return '0';
  
          } catch (Exception $th) {
-             return $th->getException();
+             return $th;
          }
 
     }

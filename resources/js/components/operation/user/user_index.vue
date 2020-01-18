@@ -137,10 +137,17 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label>User Type</label>
-                  <select class="form-control" name id v-model="user_type">
-                    <option class="form-control" value="Admin">Admin</option>
-                    <option class="form-control" value="super_admin">Super Admin</option>
-                  </select>
+                 <multiselect
+                      v-model="user_type"
+                      deselect-label="Can't remove this value"
+                      track-by="id"
+                      label="name"
+                      placeholder="Select one"
+                      :options="user_types"
+                      :searchable="false"
+                      :allow-empty="false"
+                      required
+                    ></multiselect>
                   <span v-if="errors.user_type">
                     <p class="text-danger">{{errors.user_type[0]}}</p>
                   </span>
@@ -249,7 +256,7 @@
                   <td class="text-center">{{user.id}}</td>
                   <td class="text-center">{{user.name}}</td>
                   <td class="text-center">{{user.email}}</td>
-                  <td class="text-center">{{user.user_type}}</td>
+                  <td class="text-center">{{user.type_name}}</td>
                   <td class="text-center">
                     <button
                       type="button"
@@ -286,7 +293,8 @@ export default {
       id: "",
       name: "",
       email: "",
-      user_type: "",
+      user_type: null,
+      user_types:[],
       password: "",
       cmf_password: "",
       paginate_count: 10,
@@ -298,7 +306,7 @@ export default {
     };
   },
   mounted() {
-    this.populateUser();
+   this.initialData();
   },
   methods: {
     resetForm() {
@@ -306,7 +314,7 @@ export default {
       this.id = "";
       this.name = "";
       this.email = "";
-      this.user_type = "";
+      this.user_type = null;
       this.password = "";
       this.cmf_password = "";
       this.errors = [];
@@ -319,11 +327,13 @@ export default {
         this.password == this.cmf_password &&
         (this.password.length > 7 && this.cmf_password.length > 7)
       ) {
+
         this.cmfPwd = true;
       } else this.cmfPwd = false;
     },
 
     createUser() {
+      console.log(this.user_type.id);
       if (this.password != this.cmf_password) {
         Vue.notify({
           group: "foo",
@@ -335,7 +345,7 @@ export default {
           .post("/create/user", {
             name: this.name,
             email: this.email,
-            user_type: this.user_type,
+            user_type_id: this.user_type.id,
             password: this.password
           })
           .then(res => {
@@ -372,6 +382,19 @@ export default {
       }
     },
 
+    initialData()
+    {
+        axios.get("/initial/users/data/" + this.paginate_count).then(res => {
+        if (res.status == 200) {
+          console.log(res);
+          this.users = res.data['users'];
+          this.user_types = res.data['user_types'];
+          this.load_data = false;
+        }
+      });
+
+    },
+
     populateUser(page = 1) {
       axios.get("/populate/users/" + this.paginate_count).then(res => {
         if (res.status == 200) {
@@ -386,25 +409,28 @@ export default {
       this.id = user.id;
       this.name = user.name;
       this.email = user.email;
-      this.user_type = user.user_type;
-      this.password = user.password;
+      this.user_type = {
+        "id":user.user_type_id,
+        "name":user.type_name
+      }, 
+      //this.password = user.password;
       console.log(user);
     },
 
     updateUser() {
-      if (this.cmfPwd != true) {
-        Vue.notify({
-          group: "foo",
-          title: "Important message",
-          text: "Your password not matched!"
-        });
-      } else {
+      // if (this.cmfPwd == true) {
+      //   Vue.notify({
+      //     group: "foo",
+      //     title: "Important message",
+      //     text: "Your password not matched!"
+      //   });
+      // } else {
         axios
           .post("/update/user", {
             id: this.id,
             name: this.name,
             email: this.email,
-            user_type: this.user_type,
+            user_type_id: this.user_type.id,
             password: this.password
           })
           .then(res => {
@@ -439,7 +465,7 @@ export default {
             if (err.response.status == 422)
               this.errors = err.response.data.errors;
           });
-      }
+      // }
     },
 
     deleteUser(user) {      

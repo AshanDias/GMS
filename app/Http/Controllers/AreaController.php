@@ -14,7 +14,13 @@ class AreaController extends Controller
      */
     public function index()
     {
-        //
+        
+    }
+
+
+    public function populateArea()
+    {
+        return Area::select('id','name')->get();
     }
 
     /**

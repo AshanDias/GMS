@@ -26,6 +26,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/', 'HomeController@index');
 
     //user CRUD
+    Route::get('/initial/users/data/{count}','Auth\RegisterController@populateUsersData');
     Route::get('/populate/users/{count}','Auth\RegisterController@populateUsers');
     Route::post('/create/user','Auth\RegisterController@createUser');
     Route::post('/update/user','Auth\RegisterController@updateUser');
@@ -52,7 +53,11 @@ Route::group(['middleware' => ['web']], function () {
  
 });
  
+//Mobile Web api
 Route::post('/customer/request','CustomerRequestController@store');
 Route::get('/customer/all/request','CustomerRequestController@populateData');
+Route::get('/areas/all','AreaController@populateArea');
+Route::get('/category/all','CategoryController@populateCategory');
+
 //Route::get('/customer/request/{count}','CustomerRequestController@index');
 

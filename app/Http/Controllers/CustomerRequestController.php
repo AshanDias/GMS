@@ -20,6 +20,7 @@ class CustomerRequestController extends Controller
        ->join('categories','categories.id','customer_requests.category_id')
        ->join('statuses','statuses.id','customer_requests.status_id')
        ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status')
+       ->orderBy('id','DESC')
        ->paginate($count);
     }
 
@@ -30,6 +31,7 @@ class CustomerRequestController extends Controller
        ->join('categories','categories.id','customer_requests.category_id')
        ->join('statuses','statuses.id','customer_requests.status_id')
        ->select('customer_requests.*','areas.name','categories.name','statuses.status')
+       ->orderBy('id','DESC')
        ->get();
     }
 
@@ -79,12 +81,13 @@ class CustomerRequestController extends Controller
             $result = $customerRequest->save();
  
              if($result)
-                 return 1;
+                $customerRequest;
+                 //return 1;
              else
-                 return 0;
+                 return '0';
  
          } catch (Exception $th) {
-             return $th;
+             return $th->getException();
          }
 
     }

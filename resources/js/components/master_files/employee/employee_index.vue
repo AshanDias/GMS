@@ -204,6 +204,7 @@
                   <th class="text-center">#</th>
                   <th class="text-center">Name</th>
                   <th class="text-center">Employee NIC</th>
+                  <th class="text-center">Employee Type</th>
                   <th class="text-center">Status</th>
                   <th class="text-center">Action</th>
                 </tr>
@@ -212,7 +213,8 @@
                 <tr v-for="(Employee,index) in Employees.data" :key="index">
                   <td class="text-center">{{Employee.id}}</td>
                   <td class="text-center">{{Employee.first_name}} {{Employee.last_name}}</td>
-                  <td class="text-center">{{Employee.nic}}</td>                  
+                  <td class="text-center">{{Employee.nic}}</td>    
+                  <td class="text-center">{{Employee.empType}}</td>                       
                   <td class="text-center">
                    <span v-if="Employee.status_id == 1" class="badge badge-success">{{Employee.status}}</span> 
                    <span v-if="Employee.status_id == 2" class="badge badge-danger">{{Employee.status}}</span>

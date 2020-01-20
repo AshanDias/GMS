@@ -25,6 +25,7 @@ class CreateEmployeesTable extends Migration
             $table->foreign('employee_type_id')->references('id')->on('user_types');
             $table->bigInteger('status_id')->unsigned();
             $table->foreign('status_id')->references('id')->on('statuses');
+            $table->tinyInteger('have_group')->default(0);
             $table->timestamps();
         });
     }

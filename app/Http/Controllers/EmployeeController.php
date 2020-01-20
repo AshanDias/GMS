@@ -31,7 +31,10 @@ class EmployeeController extends Controller
    {
        return DB::table('employees')
        ->join('statuses','statuses.id','employees.status_id')
-       ->select('employees.*','statuses.status')->paginate();
+       ->join('user_types','user_types.id','employees.employee_type_id')
+       ->select('employees.*','statuses.status','user_types.name as empType')
+       ->orderBy('employees.id','ASC')
+       ->paginate();
    }
 
    /**

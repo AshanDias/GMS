@@ -19,7 +19,8 @@ class CustomerRequestController extends Controller
        ->join('areas','areas.id','customer_requests.area_id')
        ->join('categories','categories.id','customer_requests.category_id')
        ->join('statuses','statuses.id','customer_requests.status_id')
-       ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status')
+       ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+       ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','vehicle_types.type_code as vehicle_type')
        ->orderBy('id','DESC')
        ->paginate($count);
     }
@@ -68,7 +69,7 @@ class CustomerRequestController extends Controller
             $customerRequest->customer_name = $request->customer_name;
             $customerRequest->email = $request->email;
             $customerRequest->area_id = $request->area_id;
-          //  $customerRequest->vehicle_id = $request->vehicle_id;
+            $customerRequest->vehicle_type_id = $request->vehicle_type_id;
             $customerRequest->description =  $request->description;
             $customerRequest->tele_no =  $request->tele_no;
             $customerRequest->longitude = $request->longitude;
@@ -120,9 +121,24 @@ class CustomerRequestController extends Controller
      * @param  \App\CustomerRequest  $customerRequest
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CustomerRequest $customerRequest)
+    public function update(Request $request)
     {
-        //
+       try {
+        
+        $CustomerRequest = CustomerRequest::find($request->id);
+        $CustomerRequest->vehicle_id = $request->vehicle_id;
+        $CustomerRequest->status_id = 6;
+        $result = $CustomerRequest->save();
+
+        if($result)
+            return 'Success';
+        else
+            return '0';
+
+       } catch (Exception $th) {
+           return $th->getException();
+       }
+
     }
 
     /**

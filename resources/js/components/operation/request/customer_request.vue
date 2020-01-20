@@ -22,91 +22,164 @@
         </div>
         <!-- /.container-fluid -->
       </section>
-      <!-- Modal -->    
-        <!-- Employee List -->
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Request List</h3>
+      <!-- Modal -->
+      <!-- Employee List -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Request List</h3>
 
-            <div class="card-tools">
-              <div class="input-group input-group-sm" style="width: 250px;">
-                <label for></label>
-                <select class="form-control" name id v-model="paginate_count">
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
-                </select>&nbsp;
-                <input
-                  type="text"
-                  name="table_search"
-                  class="form-control float-right"
-                  placeholder="Search"
-                />
+          <div class="card-tools">
+            <div class="input-group input-group-sm" style="width: 250px;">
+              <label for></label>
+              <select class="form-control" name id v-model="paginate_count">
+                <option>10</option>
+                <option>50</option>
+                <option>100</option>
+              </select>&nbsp;
+              <input
+                type="text"
+                name="table_search"
+                class="form-control float-right"
+                placeholder="Search"
+              />
 
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-default">
-                    <i class="fas fa-search"></i>
-                  </button>
-                </div>
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-default">
+                  <i class="fas fa-search"></i>
+                </button>
               </div>
             </div>
           </div>
-          <!-- /.card-header -->
-          <div class="card-body table-responsive p-0" style="height: 500px;">
-            <table class="table table-head-fixed">
-              <thead>
-                <tr>
-                  <th class="text-center">#</th>
-                  <th class="text-center">Customer Name</th>
-                  <th class="text-center">Email</th>
-                  <th class="text-center">Area</th>                   	
-                  <th class="text-center">Address</th>
-                  <th class="text-center">Address 2</th>
-                  <th class="text-center">Address 3</th>
-                  <th class="text-center">Category</th> 
-                  <th class="text-center">Status</th>
-                  <th class="text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="request in requests.data" :key="request.id">
-                  <td class="text-center">{{request.id}}</td>
-                  <td class="text-center">{{request.customer_name}}</td>
-                  <td class="text-center">{{request.email}}</td>
-                  <td class="text-center">{{request.area_name}}</td>
-                  <td v-if="request.address_1 != 'null'" class="text-center">{{request.address_1}}</td>
-                   <td v-else class="text-center">-</td>
-                    <td v-if="request.address_2 != 'null'" class="text-center">{{request.address_2}}</td>
-                   <td v-else class="text-center">-</td>
-                  <td v-if="request.address_3 != 'null'" class="text-center">{{request.address_3}}</td>
-                   <td v-else class="text-center">-</td>
-                  <td class="text-center">{{request.category_name}}</td>
-                  <td class="text-center">{{request.status}}</td>
-                  <td class="text-center">                  
-                    <button type="button"  class="btn btn-danger">Delete</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-             <div v-if="load_data" class="d-flex justify-content-center mt-5">
-                  <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>
-                </div>
-          </div>
-          <!-- /.card-body -->
-          <div class="card-footer">
-             <!-- <pagination v-if="load_data==false" class="float-right" :limit="2" :data="bookings" 
-                        @pagination-change-page="populateUser"></pagination> -->
-          </div>
-          <!-- /.card -->
         </div>
-        <!-- Employee List End -->
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0" style="height: 500px;">
+          <table class="table table-head-fixed">
+            <thead>
+              <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Customer Name</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">Area</th>
+                <th class="text-center">Category</th>
+                <th class="text-center">Vehicle Type</th>
+                <th class="text-center">Address</th>
+                <th class="text-center">Address 2</th>
+                <th class="text-center">Address 3</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(request,index) in requests.data" :key="index">
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.id}}</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.customer_name}}</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.email}}</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.area_name}}</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.category_name}}</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.vehicle_type}}</td>
+                <td
+                  v-if="request.address_1 != 'null'"
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.address_1}}</td>
+                <td
+                  v-else
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >-</td>
+                <td
+                  v-if="request.address_2 != 'null'"
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.address_2}}</td>
+                <td
+                  v-else
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >-</td>
+                <td
+                  v-if="request.address_3 != 'null'"
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.address_3}}</td>
+                <td
+                  v-else
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >-</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >{{request.status}}</td>
+                <td
+                  class="text-center"
+                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                >
+                  <multiselect
+                    v-model="selectedVehicle"
+                    deselect-label="Can't remove this value"
+                    track-by="id"
+                    label="name"
+                    placeholder="Select one"
+                    :options="EmployeeStatus"
+                    :searchable="false"
+                    :allow-empty="false"   
+                    :close-on-select="true"                 
+                    required
+                    @select="approveRequest(request.id)"
+                  ></multiselect>
+                  <!-- <div class="row">
+                    <button
+                      type="button"
+                      class="btn btn-success btn-xs"
+                      data-toggle="modal"
+                      data-target="#modal-sm" 
+                    >Approve</button>                  
+                   
+                    <button type="button" class="btn btn-danger btn-xs">Refuse</button>
+                  </div>-->
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div v-if="load_data" class="d-flex justify-content-center mt-5">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+          <!-- <pagination v-if="load_data==false" class="float-right" :limit="2" :data="bookings" 
+          @pagination-change-page="populateUser"></pagination>-->
+        </div>
+        <!-- /.card -->
       </div>
+      <!-- Employee List End -->
     </div>
+  </div>
 </template> 
-<script> 
-export default { 
+<script>
+export default {
   data() {
     return {
       id: "",
@@ -120,25 +193,89 @@ export default {
       requests: [],
       isEdit: false,
       cmfPwd: false,
-      load_data:true
+      load_data: true,
+      selectedVehicle: null,
+      EmployeeStatus: [
+        { id: 1, name: "Test1" },
+        { id: 2, name: "Test2" },
+        { id: 3, name: "Test3" }
+      ]
     };
   },
   mounted() {
     this.populateRequest();
   },
   methods: {
-   
+    approveRequest(id) {
+      this.$swal
+        .fire({
+          title: "Are you sure?",
+          text: "You want to approve this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, approve it!"
+        })
+        .then(result => {
+          axios
+            .post("/approve/customer/request", {
+              id: id,
+              vehicle_id: this.selectedVehicle.id
+            })
+            .then(res => {
+              console.log(res);
+              if (res.status == 200) {
+                if (res.data == "Success") {
+                  this.populateRequest();
+                  Vue.notify({
+                    group: "foo",
+                    type: "success",
+                    title: "Important message",
+                    text: "Request approved success!"
+                  });
+                  if (result.value) {
+                    this.$swal.fire(
+                      "Approved!",
+                      "Request has been approved.",
+                      "success"
+                    );
+                  }
+                  
+                } else {
+                  Vue.notify({
+                    group: "foo",
+                    type: "warn",
+                    title: "Important message",
+                    text: "Request approved fail!"
+                  });
+                }
+              } else if (res.status == 500) {
+                Vue.notify({
+                  group: "foo",
+                  type: "warn",
+                  title: "Important message",
+                  text: "Server error !"
+                });
+              }
+            })
+            .catch(err => {
+              if (err.response.status == 422)
+                this.errors = err.response.data.errors;
+            });
+        });
+    },
     populateRequest(page = 1) {
       axios.get("/customer/request/" + this.paginate_count).then(res => {
         if (res.status == 200) {
-            console.log(res.data);
+          console.log(res.data);
           this.requests = res.data;
           this.load_data = false;
         }
       });
     },
 
-    deleteUser(user) {      
+    deleteUser(user) {
       this.$confirm("Are you sure?").then(() => {
         axios
           .get("/delete/user/" + user.id)

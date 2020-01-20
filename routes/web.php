@@ -46,8 +46,11 @@ Route::group(['middleware' => ['web']], function () {
 
     //Collector Group
     Route::get('/collector/groups/{count}','EmployeeGroupController@index');
+    Route::post('/create/employee/group','EmployeeGroupController@store');
     
+    //Customer Request
     Route::get('/customer/request/{count}','CustomerRequestController@index');
+    Route::post('/approve/customer/request','CustomerRequestController@update');
    
  
 });
@@ -57,6 +60,6 @@ Route::post('/customer/request','CustomerRequestController@store');
 Route::get('/customer/all/request','CustomerRequestController@populateData');
 Route::get('/areas/all','AreaController@populateArea');
 Route::get('/category/all','CategoryController@populateCategory');
-
+Route::get('/vehicle/types','VehicleTypeController@populateData');
 //Route::get('/customer/request/{count}','CustomerRequestController@index');
 

@@ -14,6 +14,7 @@ import VueSimpleAlert from "vue-simple-alert";
 import Paginate from 'vuejs-paginate'
 import Multiselect from 'vue-multiselect'
 import VueSweetalert2 from 'vue-sweetalert2';
+// import vuepassword from './components/public_component/vuepassword';
 import 'sweetalert2/dist/sweetalert2.min.css';
  
 Vue.use(VueRouter)
@@ -21,6 +22,7 @@ Vue.use(Notifications)
 Vue.use(VuejsDialog);
 Vue.use(VueSimpleAlert);
 Vue.use(VueSweetalert2);
+// Vue.use('vuepassword',vuepassword);
 Vue.component('pagination', Paginate)
 Vue.component('multiselect', Multiselect)
 

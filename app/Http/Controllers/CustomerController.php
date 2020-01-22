@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use Illuminate\Http\Request;
 
+
 class CustomerController extends Controller
 {
     /**
@@ -35,7 +36,28 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       
+       try {
+
+        $customer = new Customer();
+        $customer->email = $request->email;
+        $customer->first_name = $request->first_name;
+        $customer->last_name = $request->last_name;
+        $customer->nic = $request->nic;
+        $customer->telephone_no = $request->telephone_no;
+        $customer->address_line_1 = $request->address_line_1;
+        $customer->address_line_2 = $request->address_line_2;
+        $customer->address_line_3 = $request->address_line_3;
+        $customer->email = $request->email;
+        $result = $customer->save();
+
+        if ($result)
+            return $request;
+        else
+            return '0';
+       } catch (Exception $th) {
+           return $th->getException();
+       }
     }
 
     /**

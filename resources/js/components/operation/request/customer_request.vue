@@ -51,9 +51,9 @@
             </div>
           </div>
         </div>
-        <!-- /.card-header -->
+        <!-- /.card-header table-head-fixed -->
         <div class="card-body table-responsive p-0" style="height: 500px;">
-          <table class="table table-head-fixed">
+          <table class="table">
             <thead>
               <tr>
                 <th class="text-center">#</th>
@@ -73,79 +73,95 @@
               <tr v-for="(request,index) in requests.data" :key="index">
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.id}}</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.customer_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.email}}</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.area_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.category_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.vehicle_type}}</td>
                 <td
                   v-if="request.address_1 != 'null'"
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.address_1}}</td>
                 <td
                   v-else
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >-</td>
                 <td
                   v-if="request.address_2 != 'null'"
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.address_2}}</td>
                 <td
                   v-else
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >-</td>
                 <td
                   v-if="request.address_3 != 'null'"
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.address_3}}</td>
                 <td
                   v-else
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >-</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >{{request.status}}</td>
                 <td
                   class="text-center"
-                  :class="request.status=='Approve'?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >
-                  <multiselect
-                    v-model="selectedVehicle"
+                  <select
+                    v-if="request.vehicle_id == null"
+                    name="category_id"
+                    @change="approveRequest(request.id,$event)"
+                    class="form-control"
+                  >
+                    <option>--- Select Category ---</option>
+                    <option
+                      v-for="vehicle in vehicles"
+                      :key="vehicle.id"
+                      :value="vehicle.id"
+                    >{{vehicle.name}}</option>
+                  </select>
+                  <p v-else>{{request.vehicle['name']}}</p>
+
+                  <!-- <multiselect
+                    v-model="request.vehicle"
                     deselect-label="Can't remove this value"
                     track-by="id"
                     label="name"
                     placeholder="Select one"
-                    :options="EmployeeStatus"
+                    :options="vehicles"
                     :searchable="false"
                     :allow-empty="false"   
                     :close-on-select="true"                 
                     required
-                    @select="approveRequest(request.id)"
-                  ></multiselect>
+                    @input="approveRequest(request.id,index)"
+                  ></multiselect>-->
+                  <!--":options="EmployeeStatus"  @select="approveRequest(request.id)" -->
                   <!-- <div class="row">
                     <button
                       type="button"
@@ -195,81 +211,91 @@ export default {
       cmfPwd: false,
       load_data: true,
       selectedVehicle: null,
-      EmployeeStatus: [
-        { id: 1, name: "Test1" },
-        { id: 2, name: "Test2" },
-        { id: 3, name: "Test3" }
-      ]
+      vehicles: []
     };
+  },
+  filters:{
+   
+  },
+  computed: {
   },
   mounted() {
     this.populateRequest();
   },
   methods: {
-    approveRequest(id) {
-      this.$swal
-        .fire({
-          title: "Are you sure?",
-          text: "You want to approve this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Yes, approve it!"
-        })
-        .then(result => {
-          axios
-            .post("/approve/customer/request", {
-              id: id,
-              vehicle_id: this.selectedVehicle.id
-            })
-            .then(res => {
-              console.log(res);
-              if (res.status == 200) {
-                if (res.data == "Success") {
-                  this.populateRequest();
-                  Vue.notify({
-                    group: "foo",
-                    type: "success",
-                    title: "Important message",
-                    text: "Request approved success!"
-                  });
-                  if (result.value) {
-                    this.$swal.fire(
-                      "Approved!",
-                      "Request has been approved.",
-                      "success"
-                    );
+    onChange(event) {
+      console.log(event.target.value);
+    },
+    approveRequest(id, event) {
+      // console.log(event.target.value);
+      // var vehicle = this.requests.data[0].vehicle;
+      // console.log(vehicle);
+      if (event.target.value != undefined || event.target.value != null) {
+        console.log(event.target.value);
+        this.$swal
+          .fire({
+            title: "Are you sure?",
+            text: "You want to approve this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, approve it!"
+          })
+          .then(result => {
+            axios
+              .post("/approve/customer/request", {
+                id: id,
+                vehicle_id: event.target.value
+              })
+              .then(res => {
+                console.log(res);
+                if (res.status == 200) {
+                  if (res.data == "Success") {
+                    this.populateRequest();
+                    Vue.notify({
+                      group: "foo",
+                      type: "success",
+                      title: "Important message",
+                      text: "Request approved success!"
+                    });
+                    if (result.value) {
+                      this.$swal.fire(
+                        "Approved!",
+                        "Request has been approved.",
+                        "success"
+                      );
+                    }
+                  } else {
+                    Vue.notify({
+                      group: "foo",
+                      type: "warn",
+                      title: "Important message",
+                      text: "Request approved fail!"
+                    });
                   }
-                  
-                } else {
+                } else if (res.status == 500) {
                   Vue.notify({
                     group: "foo",
                     type: "warn",
                     title: "Important message",
-                    text: "Request approved fail!"
+                    text: "Server error !"
                   });
                 }
-              } else if (res.status == 500) {
-                Vue.notify({
-                  group: "foo",
-                  type: "warn",
-                  title: "Important message",
-                  text: "Server error !"
-                });
-              }
-            })
-            .catch(err => {
-              if (err.response.status == 422)
-                this.errors = err.response.data.errors;
-            });
-        });
+              })
+              .catch(err => {
+                if (err.response.status == 422)
+                  this.errors = err.response.data.errors;
+              });
+          });
+      }
     },
     populateRequest(page = 1) {
       axios.get("/customer/request/" + this.paginate_count).then(res => {
         if (res.status == 200) {
           console.log(res.data);
-          this.requests = res.data;
+          this.requests = res.data["customerRequest"];
+          this.vehicles = res.data["vehicles"];
           this.load_data = false;
         }
       });

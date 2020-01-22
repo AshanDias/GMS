@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\CustomerRequest;
+use App\Vehicle;
 use Illuminate\Http\Request;
 use DB;
+use Carbon\Carbon;
 
 class CustomerRequestController extends Controller
 {
@@ -15,26 +17,69 @@ class CustomerRequestController extends Controller
      */
     public function index($count)
     {
-       return DB::table('customer_requests')
-       ->join('areas','areas.id','customer_requests.area_id')
-       ->join('categories','categories.id','customer_requests.category_id')
-       ->join('statuses','statuses.id','customer_requests.status_id')
-       ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
-       ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','vehicle_types.type_code as vehicle_type')
-       ->orderBy('id','DESC')
-       ->paginate($count);
+    //    return DB::table('customer_requests')
+    //    ->join('areas','areas.id','customer_requests.area_id')
+    //    ->join('categories','categories.id','customer_requests.category_id')
+    //    ->join('statuses','statuses.id','customer_requests.status_id')
+    //    ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+    //    ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','vehicle_types.type_code as vehicle_type')
+    //    ->orderBy('id','DESC')
+    //    ->paginate($count);
+
+    $customerRequest = CustomerRequest::join('areas','areas.id','customer_requests.area_id')
+    ->join('categories','categories.id','customer_requests.category_id')
+    ->join('statuses','statuses.id','customer_requests.status_id')
+    ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+    ->with(['vehicle' => function($quary){
+        $quary->select('id','name');
+    }])
+    ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
+    ->orderBy('id','DESC')
+    ->paginate($count);
+
+    $vehicles = Vehicle::select('id','name')->where('status_id',1)->get();
+
+    return array('vehicles'=>$vehicles,'customerRequest'=>$customerRequest);
+ 
     }
 
-    public function populateData()
+    public function userViceData($email)
     {
-        return DB::table('customer_requests')
-       ->join('areas','areas.id','customer_requests.area_id')
-       ->join('categories','categories.id','customer_requests.category_id')
-       ->join('statuses','statuses.id','customer_requests.status_id')
-       ->select('customer_requests.*','areas.name','categories.name','statuses.status')
-       ->orderBy('id','DESC')
-       ->get();
+        $customerRequest = CustomerRequest::join('areas','areas.id','customer_requests.area_id')
+            ->join('categories','categories.id','customer_requests.category_id')
+            ->join('statuses','statuses.id','customer_requests.status_id')
+            ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+            ->where('customer_requests.email',$email)
+            ->with(['vehicle' => function($quary){
+                $quary->select('id','name');
+            }])
+            ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id')
+            ->orderBy('id','DESC')
+            ->get();
+
+        return $customerRequest;
     }
+
+    // public function populateData()
+    // {
+    //     return CustomerRequest::join('areas','areas.id','customer_requests.area_id')
+    //     ->join('categories','categories.id','customer_requests.category_id')
+    //     ->join('statuses','statuses.id','customer_requests.status_id')
+    //     ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+    //     ->with(['vehicle' => function($quary){
+    //         $quary->select('id','name');
+    //     }])
+    //     ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
+    //     ->orderBy('id','DESC')
+    //     ->paginate($count);
+    // //     return DB::table('customer_requests')
+    // //    ->join('areas','areas.id','customer_requests.area_id')
+    // //    ->join('categories','categories.id','customer_requests.category_id')
+    // //    ->join('statuses','statuses.id','customer_requests.status_id')
+    // //    ->select('customer_requests.*','areas.name','categories.name','statuses.status')
+    // //    ->orderBy('id','DESC')
+    // //    ->get();
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -79,6 +124,8 @@ class CustomerRequestController extends Controller
             $customerRequest->address_3 =  $request->address_3;
             $customerRequest->category_id =  $request->category_id;
             $customerRequest->status_id =3;
+            $customerRequest->request_date = Carbon::now()->toDateString();
+            $customerRequest->request_time = Carbon::now()->toTimeString();
             $result = $customerRequest->save();
             
              if($result)

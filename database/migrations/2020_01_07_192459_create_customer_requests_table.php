@@ -30,6 +30,8 @@ class CreateCustomerRequestsTable extends Migration
             $table->text('address_3')->nullable();
             $table->integer('category_id')->nullable();
             $table->integer('status_id')->nullable();
+            $table->string('request_date')->nullable();
+            $table->string('request_time')->nullable();
             $table->timestamps();
         });
     }

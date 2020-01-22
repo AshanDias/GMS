@@ -43,6 +43,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('/create/employee','EmployeeController@store');
     Route::post('/update/employee','EmployeeController@update');
     Route::get('/delete/employee/{id}','EmployeeController@destroy');
+    Route::post('/update/employee/password','EmployeeController@passwordChange');
 
     //Collector Group
     Route::get('/collector/groups/{count}','EmployeeGroupController@index');
@@ -56,10 +57,27 @@ Route::group(['middleware' => ['web']], function () {
 });
  
 //Mobile Web api
+
+//Customer
+Route::post('/customer/create','CustomerController@store');
+
+//CustomerRequest
 Route::post('/customer/request','CustomerRequestController@store');
 Route::get('/customer/all/request','CustomerRequestController@populateData');
+Route::get('/customer/request/email/{email}','CustomerRequestController@userViceData');
+
+//Area
 Route::get('/areas/all','AreaController@populateArea');
+
+//Category
 Route::get('/category/all','CategoryController@populateCategory');
+
+//Vehicle
 Route::get('/vehicle/types','VehicleTypeController@populateData');
-//Route::get('/customer/request/{count}','CustomerRequestController@index');
+
+//Payment
+Route::get('/payment/history/email/{email}','PaymentController@index'); 
+
+//Driver Login
+Route::post('/driver/login','EmployeeController@driverLogin');
 

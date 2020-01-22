@@ -20,6 +20,7 @@ class CreateEmployeesTable extends Migration
             //$table->bigInteger('user_id')->unsigned();
             //$table->foreign('user_id')->references('id')->on('users'); 
             $table->string('nic',10)->unique();
+            $table->string('password',50);
             $table->string('telephone_no',15);
             $table->bigInteger('employee_type_id')->unsigned();
             $table->foreign('employee_type_id')->references('id')->on('user_types');

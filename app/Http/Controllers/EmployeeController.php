@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Employee;
 use Illuminate\Http\Request;
 use DB;
+use Hash;
 
 class EmployeeController extends Controller
 {    /**
@@ -94,6 +95,32 @@ class EmployeeController extends Controller
    public function edit(Vehicle $vehicle)
    {
        //
+   }
+
+   
+   public function driverLogin(Request $request)
+   {
+        $Employee = Employee::where('nic','894521365V')->first();
+        $passwordHash = $Employee->password; 
+        $result = Hash::check($request->password, $passwordHash);
+        return json_encode($result);
+
+   }
+
+   public function passwordChange(Request $request)
+   { 
+     
+      try {
+        $employee = Employee::findOrFail($request->id);
+        $employee->password = Hash::make( $request->password);       
+        $result = $employee->save();
+
+       if($result)
+       return 'Success';
+
+      } catch (Exception $th) {
+          return $th;
+      }
    }
 
    /**

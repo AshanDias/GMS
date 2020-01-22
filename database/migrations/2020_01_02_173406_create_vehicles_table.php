@@ -20,7 +20,7 @@ class CreateVehiclesTable extends Migration
             $table->string('manf_year')->nullable();
             $table->string('reg_year');
             $table->integer('vehicle_type_id'); 
-            $table->tinyInteger('have_group')->default(0);
+            $table->integer('have_group')->default(0);
             $table->integer('status_id')->default(1);
             $table->timestamps();
         });

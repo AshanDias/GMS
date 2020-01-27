@@ -53,6 +53,14 @@ class VehicleController extends Controller
         ->paginate($count);
         
     }
+
+    public function vehicleData()
+    {
+        return DB::table('vehicles') 
+        ->join('vehicle_types','vehicle_types.id','vehicles.vehicle_type_id')
+        ->select('vehicles.id as vid','vehicles.name','vehicles.reg_no','vehicle_types.type_code')
+        ->get();
+    }
    
 
     /**

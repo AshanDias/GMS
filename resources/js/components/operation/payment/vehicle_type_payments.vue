@@ -7,15 +7,15 @@
           <div class="row mb-2">
             <div class="col-sm-6">
               <h1>
-                <i class="nav-icon fas fa-tractor"></i>&nbsp;Collector Groups
+                <i class="nav-icon fas fa-tractor"></i>&nbsp;Vehicle Type Payment
               </h1>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item">
-                  <router-link to="/">Operation</router-link>
+                  <router-link to="/">Operation Files</router-link>
                 </li>
-                <li class="breadcrumb-item active">Collector Groups</li>
+                <li class="breadcrumb-item active">Vehicle Type Payment</li>
               </ol>
             </div>
           </div>
@@ -25,7 +25,7 @@
       <div class="container-fluid">
         <div class="card card-default">
           <div class="card-header">
-            <h3 class="card-title">Create new Group</h3>
+            <h3 class="card-title">Create new Vehicle Type Payment</h3>
 
             <div class="card-tools">
               <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -39,92 +39,107 @@
           <!-- /.card-header -->
           <div class="card-body pb-1">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group">
-                  <label>Group Code</label>
+                  <label>Vehicle Type</label>
+                  &nbsp;
+                  <div v-if="isEdit">
+                    <multiselect
+                      disabled
+                      v-model="selected_vehicle_type"
+                      deselect-label="Can't remove this value"
+                      track-by="id"
+                      label="type_code"
+                      placeholder="Select one"
+                      :options="vehicle_types"
+                      :searchable="true"
+                      :allow-empty="false"
+                    ></multiselect>
+                  </div>
+                  <div v-else>
+                    <multiselect
+                      v-model="selected_vehicle_type"
+                      deselect-label="Can't remove this value"
+                      track-by="id"
+                      label="type_code"
+                      placeholder="Select one"
+                      :options="vehicle_types"
+                      :searchable="true"
+                      :allow-empty="false"
+                    ></multiselect>
+                  </div>
+                  <span v-if="errors.id">
+                    <p class="text-danger">{{errors.id[0]}}</p>
+                  </span>
+                </div>
+                <!-- /.form-group -->
+              </div>
+              <!-- /.col -->
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Vehicle type Price</label>
+                  &nbsp;
                   <input
-                    required
-                    type="text"
+                    type="number"
                     class="form-control"
-                    name
-                    id
-                    v-model="group_code"
-                    placeholder="Group Code"
+                    v-model="price"
+                    placeholder="Vehicle Price"
                   />
-                  <span v-if="errors.group_code">
-                    <p class="text-danger">{{errors.group_code[0]}}</p>
-                  </span>
                 </div>
-                <div class="form-group">
-                  <label>Vehicle</label>
+                <span v-if="errors.price">
+                  <p class="text-danger">{{errors.price[0]}}</p>
+                </span>
+                <!-- <div class="form-group">
+                  <label>Vehicle Type</label>
                   &nbsp;
-                  <div>
-                    <multiselect
-                      v-model="selectedVehicle"
-                      deselect-label="Can't remove this value"
-                      track-by="id"
-                      label="reg_no"
-                      placeholder="Select one"
-                      :options="vehicles"
-                      :searchable="false"
-                      :allow-empty="false"
-                      required
-                    ></multiselect>
-                  </div>
-                  <span v-if="errors.name">
-                    <p class="text-danger">{{errors.name[0]}}</p>
-                  </span>
-                </div>
+                  <input
+                    type="text"
+                    disabled
+                    class="form-control"
+                    v-model="vType"
+                    placeholder="Vehicle Type"
+                  />
+                </div>-->
               </div>
-              <!-- /.form-group -->
-              <div class="col-md-6">
+              <!-- <div class="col-md-4">
                 <div class="form-group">
-                  <label>Driver</label>
+                  <label>Vehicle Price</label>
                   &nbsp;
-                  <div>
-                    <multiselect
-                      v-model="selectedDriver"
-                      deselect-label="Can't remove this value"
-                      track-by="id"
-                      label="name"
-                      placeholder="Select one"
-                      :options="drivers"
-                      :searchable="false"
-                      :allow-empty="false"
-                      required
-                    ></multiselect>
-                  </div>
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="price"
+                    placeholder="Vehicle Price"
+                  />
                 </div>
-              </div>
+              </div>-->
+              <!-- /.col -->
             </div>
-            <DualListBox
-              :source="workers"
-              :destination="selectedWorkers"
-              label="name"
-              @onChangeList="onChangeList"
-            />
+            <!-- /.row -->
             <div class="form-group float-right pt-4">
               <button type="button" @click="resetForm" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
               <button
                 v-if="isEdit == false"
                 type="button"
-                @click="createGroup"
+                @click="createPayment"
                 class="btn btn-success btn-sm"
               >Submit</button>
               <button
                 v-if="isEdit"
                 type="button"
-                @click="updateVehicle"
+                @click="updateVehicleTypePayment"
                 class="btn btn-primary btn-sm"
               >Update</button>
             </div>
+
+            <!-- /.form-group -->
           </div>
           <!-- /.card-body -->
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Employee Group List</h3>
+            <h3 class="card-title">Vehicle List</h3>
 
             <div class="card-tools">
               <div class="input-group input-group-sm" style="width: 250px;">
@@ -155,33 +170,25 @@
               <thead>
                 <tr>
                   <th class="text-center">#</th>
-                  <th class="text-center">Group Code</th>
-                  <th class="text-center">Driver</th>
-                  <th class="text-center">Group Members</th>
+                  <th class="text-center">Vehicle Type</th>
+                  <th class="text-center">Price</th>
                   <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(group,index) in collector_group_with_members" :key="index">
-                  <td class="text-center">{{group.collector_group[0].id}}</td>
-                  <td class="text-center">{{group.collector_group[0].group_code}}</td>
-                  <td class="text-center">{{group.collector_group[0].name}}</td>
-                  <td class="row">
-                    <div v-for="(members,index) in group.group_member" :key="index">
-                      <span
-                        class="badge badge-success text-center"
-                      >{{members.name}}</span>&nbsp;
-                    </div>
-                  </td>
+                <tr v-for="(payment,index) in payments.data" :key="index">
+                  <td class="text-center">{{payment.id}}</td>
+                  <td class="text-center">{{payment.type_code}}</td>
+                  <td class="text-center">{{payment.price}}</td>
                   <td class="text-center">
                     <button
                       type="button"
-                      @click="setGroupToUpdate(group)"
+                      @click="setPaymentToUpdate(payment)"
                       class="btn btn-primary"
                     >Edit</button>
                     <button
                       type="button"
-                      @click="deleteVehicle(group)"
+                      @click="deletePayment(payment)"
                       class="btn btn-danger"
                     >Delete</button>
                   </td>
@@ -203,29 +210,22 @@
   </div>
 </template>
 <script>
-import DualListBox from "dual-listbox-vue";
-import "dual-listbox-vue/dist/dual-listbox.css";
 export default {
-  components: {
-    DualListBox
-  },
   data() {
     return {
       id: "",
-      group_code: "",
-      selectedDriver: null,
-      drivers: [],
-      workers: [],
-      groups: [],
-      selectedVehicle: null,
-      vehicles: [],
+      vname: "",
+      regNo: null,
+      vType: null,
+      price: null,
+      selected_vehicle_type: null,
       paginate_count: 10,
       errors: [],
+      vehicle_types: [],
       status: [],
+      payments: [],
       isEdit: false,
-      load_data: true,
-      selectedWorkers: [],
-      collector_group_with_members: []
+      load_data: true
     };
   },
   mounted() {
@@ -233,27 +233,20 @@ export default {
     //this.populateVehicle();
   },
   methods: {
-    onChangeList: function({ source, destination }) {
-      this.workers = source;
-      this.selectedWorkers = destination;
-    },
-
     resetForm() {
       this.isEdit = false;
-      this.group_code = "";
-      this.selectedDriver = null;
-      this.selectedVehicle = null;
+      this.id = "";
+      this.selected_vehicle_type = null;
       this.errors = [];
+      this.price = null;
       this.populateInitialData();
     },
 
-    createGroup() {
+    createPayment() {
       axios
-        .post("/create/employee/group", {
-          group_code: this.group_code,
-          driver_id: this.selectedDriver.id,
-          vehicle_id: this.selectedVehicle.id,
-          selectedWorkers: this.selectedWorkers
+        .post("/assign/vehicle/type/payment/post", {
+          id: this.selected_vehicle_type.id,
+          price: this.price
         })
         .then(res => {
           if (res.status == 200) {
@@ -262,22 +255,15 @@ export default {
                 group: "foo",
                 type: "success",
                 title: "Important message",
-                text: "Employee Group create success!"
+                text: "Payment added success!"
               }),
                 this.resetForm();
-            } else if ((red.data = "Fail")) {
+            } else {
               Vue.notify({
                 group: "foo",
                 type: "warn",
                 title: "Important message",
-                text: "Employee Group create fail!"
-              });
-            } else if ((red.data = "exception")) {
-              Vue.notify({
-                group: "foo",
-                type: "warn",
-                title: "Important message",
-                text: red.data["exception"]
+                text: "Payment added fail!"
               });
             }
           } else if (res.status == 500) {
@@ -292,66 +278,34 @@ export default {
         .catch(err => {
           if (err.response.status == 422)
             this.errors = err.response.data.errors;
-            console.log(this.errors);
-        });  
+        });
     },
-
+    
     populateInitialData() {
-      axios.get("/collector/groups/" + this.paginate_count).then(res => {
-        if (res.status == 200) {          
-          this.drivers = res.data["drivers"];
-          this.workers = res.data["workers"];
-          this.groups = res.data["groups"];
-          this.vehicles = res.data["vehicles"];
-          this.collector_group_with_members =
-            res.data["collector_group_with_members"];
-          console.log(this.vehicles);
-          this.load_data = false;
-        }
-      });
-    },
-
-    populateVehicle(page = 1) {
-      axios.get("/populate/vehicles/" + this.paginate_count).then(res => {
-        if (res.status == 200) {
-          this.drivers = res.data;
-
-          console.log(this.vehicles);
-          this.load_data = false;
-        }
-      });
-    },
-
-    setGroupToUpdate(group) {
-      console.log(group.collector_group);
-      this.isEdit = true;
-      this.selectedDriver = {"id":group.collector_group[0].driver_id,"name":group.collector_group[0].name};
-      this.selectedVehicle = {"id":group.collector_group[0].vehicle_id,"reg_no":group.collector_group[0].reg_no};
-      this.group_code = group.collector_group[0].group_code;
-      this.workers = group.group_member;
-      // 
-      // this.id = Vehicle.id;
-      // this.vname = Vehicle.name;
-      // this.regNo = Vehicle.reg_no;
-      // this.manufacture_year = Vehicle.manf_year;
-      // this.registered_year = Vehicle.reg_year;
-      // this.selected_vehicle_type.id = Vehicle.vehicle_type_id;
-      // this.selected_vehicle_type.type_code = Vehicle.type_code;
-      // this.selectedVehicleStatus.id = Vehicle.status_id;
-      // this.selectedVehicleStatus.status = Vehicle.status;
-      // console.log(Vehicle);
-    },
-
-    updateVehicle() {
       axios
-        .post("/update/vehicle", {
+        .get("/populate/vehicle/payment/data/get/" + this.paginate_count)
+        .then(res => {
+          if (res.status == 200) {
+            this.vehicle_types = res.data["vehicle_type_data"];
+            this.payments = res.data["payments"];
+            console.log(this.vehicle_types);
+            this.load_data = false;
+          }
+        });
+    },
+    setPaymentToUpdate(payment) {
+      this.isEdit = true;
+      this.id = payment.id;
+      this.selected_vehicle_type = payment;
+      this.price = payment.price;
+      console.log(payment);
+    },
+
+    updateVehicleTypePayment() {
+      axios
+        .post("/update/vehicle/type/payment/post", {
           id: this.id,
-          name: this.vname,
-          reg_no: this.regNo,
-          reg_year: this.registered_year,
-          manf_year: this.manufacture_year,
-          vehicle_type_id: this.selected_vehicle_type.id,
-          status_id: this.selectedVehicleStatus.id
+          price: this.price
         })
         .then(res => {
           console.log(res);
@@ -361,7 +315,7 @@ export default {
                 group: "foo",
                 type: "success",
                 title: "Important message",
-                text: "Vehicle update success!"
+                text: "Payment update success!"
               }),
                 this.resetForm();
             } else {
@@ -369,7 +323,7 @@ export default {
                 group: "foo",
                 type: "warn",
                 title: "Important message",
-                text: "Vehicle update fail!"
+                text: "Payment update fail!"
               });
             }
           } else if (res.status == 500) {
@@ -387,10 +341,10 @@ export default {
         });
     },
 
-    deleteVehicle(vehicle) {
+    deletePayment(payment) {
       this.$confirm("Are you sure?").then(() => {
         axios
-          .get("/delete/vehicle/" + vehicle.id)
+          .get("/delete/vehicle/type/payment/get/" + payment.id)
           .then(res => {
             console.log(res);
             if (res.status == 200) {
@@ -399,7 +353,7 @@ export default {
                   group: "foo",
                   type: "success",
                   title: "Important message",
-                  text: "Vehicle deleted success!"
+                  text: "Payment deleted success!"
                 }),
                   this.resetForm();
               } else {
@@ -407,7 +361,7 @@ export default {
                   group: "foo",
                   type: "warn",
                   title: "Important message",
-                  text: "Vehicle delete fail!"
+                  text: "Payment delete fail!"
                 });
               }
             } else if (res.status == 500) {

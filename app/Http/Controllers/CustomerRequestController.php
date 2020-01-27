@@ -4,42 +4,75 @@ namespace App\Http\Controllers;
 
 use App\CustomerRequest;
 use App\Vehicle;
+use App\Payment;
+use App\Customer;
+use App\EmployeeGroup;
 use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
 
 class CustomerRequestController extends Controller
 {
+    //DashBoard data
+    public function dashboardData()
+    {
+        //This Week
+        $weekStartDate = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d');
+
+        //This Month
+        $monthStartDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $monthEndDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        
+        //This Year
+        $yearStartData = Carbon::now()->startOfYear()->format('Y-m-d');
+        $yearEndData = Carbon::now()->endOfYear()->format('Y-m-d');
+        
+        $todayRequest = CustomerRequest::join('categories','categories.id','customer_requests.category_id')
+        ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id')
+        ->where('request_date',Carbon::now()->toDateString()) 
+        ->orderBy('customer_requests.id','DESC') 
+        ->select('customer_requests.address_1','customer_requests.address_2','customer_requests.address_3','customer_requests.customer_name','vehicle_types.type_code',DB::raw('concat(customer_requests.address_1,customer_requests.address_2,customer_requests.address_3) as title'))
+        ->get();
+
+        $events = CustomerRequest::join('categories','categories.id','customer_requests.category_id')
+        ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id')
+        ->where('request_date',Carbon::now()->toDateString()) 
+        ->orderBy('customer_requests.id','DESC') 
+        ->select(DB::raw('concat(customer_requests.address_1,customer_requests.address_2) as title'),'customer_requests.request_date as date' )
+        ->get();
+        $today = CustomerRequest::where('request_date',Carbon::now()->toDateString())->count();
+        $thisWeek = CustomerRequest::whereBetween('request_date',array($weekStartDate,$weekEndDate))->count();
+        $thisMonth = CustomerRequest::whereBetween('request_date',array($monthStartDate,$monthEndDate))->count();
+        $thisYear = CustomerRequest::whereBetween('request_date',array($yearStartData,$yearEndData))->count();
+        $CustomerRequest = array('todayRequest'=>$todayRequest ,'events'=>$events,'today'=>$today,'thisWeek'=>$thisWeek,'thisMonth'=>$thisMonth,'thisYear'=>$thisYear);
+        return $CustomerRequest;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index($count)
-    {
-    //    return DB::table('customer_requests')
-    //    ->join('areas','areas.id','customer_requests.area_id')
-    //    ->join('categories','categories.id','customer_requests.category_id')
-    //    ->join('statuses','statuses.id','customer_requests.status_id')
-    //    ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
-    //    ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','vehicle_types.type_code as vehicle_type')
-    //    ->orderBy('id','DESC')
-    //    ->paginate($count);
+    { 
 
-    $customerRequest = CustomerRequest::join('areas','areas.id','customer_requests.area_id')
-    ->join('categories','categories.id','customer_requests.category_id')
-    ->join('statuses','statuses.id','customer_requests.status_id')
-    ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
-    ->with(['vehicle' => function($quary){
-        $quary->select('id','name');
-    }])
-    ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
-    ->orderBy('id','DESC')
-    ->paginate($count);
+        $customerRequest = CustomerRequest::join('areas','areas.id','customer_requests.area_id')
+        ->join('categories','categories.id','customer_requests.category_id')
+        ->join('statuses','statuses.id','customer_requests.status_id')
+        ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+        ->with(['employeegroup' => function($query)
+        {
+            $query->select('id as grp_id','group_code');
+        }]) 
+        ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
+        ->orderBy('id','DESC')
+        ->paginate($count);
 
-    $vehicles = Vehicle::select('id','name')->where('status_id',1)->get();
-
-    return array('vehicles'=>$vehicles,'customerRequest'=>$customerRequest);
+        $vehicles = Vehicle::select('id','name')->where('status_id',1)->get();
+        $employeeGroup = EmployeeGroup::select('id','group_code')->where('status_id',1)->get();
+        //return $customerRequest;
+        return array('group_data'=>$employeeGroup,'vehicles'=>$vehicles,'customerRequest'=>$customerRequest);
  
     }
 
@@ -107,36 +140,42 @@ class CustomerRequestController extends Controller
         //     'address'=>'required',
         //     'category_id'=>'required'
         //   ]);
+        $customer_id = Customer::where('email',$request->email)->select('id')->first();
+        if($customer_id == null)
+        {
+            return response("Please register first!",404);
+        }
+        else
+        {
+            try {
+                $customerRequest = new CustomerRequest();
+                $customerRequest->user_id =  $customer_id->id;
+                $customerRequest->customer_name = $request->customer_name;
+                $customerRequest->email = $request->email;
+                $customerRequest->area_id = $request->area_id;
+                $customerRequest->vehicle_type_id = $request->vehicle_type_id;           
+                $customerRequest->description =  $request->description;
+                $customerRequest->tele_no =  $request->tele_no;
+                $customerRequest->longitude = $request->longitude;
+                $customerRequest->latitude =  $request->latitude;
+                $customerRequest->address_1 =  $request->address_1;
+                $customerRequest->address_2 =  $request->address_2;
+                $customerRequest->address_3 =  $request->address_3;
+                $customerRequest->category_id =  $request->category_id;
+                $customerRequest->status_id =3;
+                $customerRequest->request_date = Carbon::now()->toDateString();
+                $customerRequest->request_time = Carbon::now()->toTimeString();
+                $result = $customerRequest->save();
 
-         try {
-            $customerRequest = new CustomerRequest();
-            $customerRequest->user_id =  $request->user_id;
-            $customerRequest->customer_name = $request->customer_name;
-            $customerRequest->email = $request->email;
-            $customerRequest->area_id = $request->area_id;
-            $customerRequest->vehicle_type_id = $request->vehicle_type_id;
-            $customerRequest->description =  $request->description;
-            $customerRequest->tele_no =  $request->tele_no;
-            $customerRequest->longitude = $request->longitude;
-            $customerRequest->latitude =  $request->latitude;
-            $customerRequest->address_1 =  $request->address_1;
-            $customerRequest->address_2 =  $request->address_2;
-            $customerRequest->address_3 =  $request->address_3;
-            $customerRequest->category_id =  $request->category_id;
-            $customerRequest->status_id =3;
-            $customerRequest->request_date = Carbon::now()->toDateString();
-            $customerRequest->request_time = Carbon::now()->toTimeString();
-            $result = $customerRequest->save();
-            
-             if($result)
-                 return $customerRequest;
-             else
-                 return '0';
- 
-         } catch (Exception $th) {
-             return $th;
-         }
-
+                if($result)
+                    return $customerRequest;
+                else
+                    return '0';
+    
+            } catch (Exception $th) {
+                return $th;
+            }
+        }
     }
 
     /**
@@ -170,19 +209,58 @@ class CustomerRequestController extends Controller
      */
     public function update(Request $request)
     {
+
+        //return $request;
+        //calculate amount
+       
        try {
         
+        DB::beginTransaction(); 
+        
+        $result = false;
+        $result2 = false;       
+
         $CustomerRequest = CustomerRequest::find($request->id);
-        $CustomerRequest->vehicle_id = $request->vehicle_id;
+        $CustomerRequest->employee_group_id = $request->group_id;
         $CustomerRequest->status_id = 6;
         $result = $CustomerRequest->save();
 
-        if($result)
+        $amount_details = DB::table('customer_requests')
+        ->join('employee_groups','employee_groups.id','customer_requests.employee_group_id')
+        ->join('vehicles','vehicles.id','employee_groups.vehicle_id') 
+        ->join('vehicle_payments','vehicle_payments.vehicle_type_id','vehicles.vehicle_type_id')
+        ->join('area_payments','area_payments.area_id','customer_requests.area_id') 
+        ->where('customer_requests.id',$request->id)        
+        ->select('vehicle_payments.price as v_type_price','area_payments.price as area_price','customer_requests.user_id','customer_requests.customer_name')
+        ->first();
+ 
+        $request_id = $request->id;
+        $customer_id = $amount_details->user_id;
+        $customer_name = $amount_details->customer_name;
+        $v_type_price = $amount_details->v_type_price;
+        $area_price = $amount_details->area_price;
+        $total_amount = $v_type_price + $area_price;
+        
+
+        $Payment = new Payment();
+        $Payment->customers_id = $customer_id;
+        $Payment->name = $customer_name;
+        $Payment->customers_request_id = $request_id;
+        $Payment->total_payment = $total_amount;
+        $Payment->date = Carbon::now()->toDateString();
+        $Payment->time = Carbon::now()->toTimeString();
+        $Payment->status_id = 6;
+        $result2 = $Payment->save();
+
+        DB::commit();
+        
+        if($result && $result2)
             return 'Success';
         else
             return '0';
 
-       } catch (Exception $th) {
+       } catch (Exception $th) {           
+           DB::rollback();           
            return $th->getException();
        }
 

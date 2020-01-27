@@ -93,6 +93,10 @@ class DatabaseSeeder extends Seeder
         ]); 
         
 
+        DB::table('')->insert([
+
+        ]);
+
 
     }
 }

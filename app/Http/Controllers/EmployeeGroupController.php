@@ -61,6 +61,7 @@ class EmployeeGroupController extends Controller
     {
        // return $request;
         $request->validate([
+            "group_code"=>"required",
             "driver_id"=>"required",
             "vehicle_id"=>"required",
             "selectedWorkers"=>"required"
@@ -106,7 +107,7 @@ class EmployeeGroupController extends Controller
              
              DB::rollback();
 
-            return array("exception"=>$th->getException());
+            return array("exception"=>$th->getMessage());
         }
          
         if($result1 && $result && $result2)        

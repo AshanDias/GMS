@@ -63,8 +63,8 @@
                 <th class="text-center">Category</th>
                 <th class="text-center">Vehicle Type</th>
                 <th class="text-center">Address</th>
-                <th class="text-center">Address 2</th>
-                <th class="text-center">Address 3</th>
+                <!-- <th class="text-center">Address 2</th>
+                <th class="text-center">Address 3</th>  -->
                 <th class="text-center">Status</th>
                 <th class="text-center">Action</th>
               </tr>
@@ -99,13 +99,13 @@
                   v-if="request.address_1 != 'null'"
                   class="text-center"
                   :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
-                >{{request.address_1}}</td>
+                >{{request.address_1}}&nbsp;{{request.address_2!='null'? ', '+request.address_2: '' }}&nbsp;{{request.address_3!='null'? ', '+request.address_3: '' }}</td>
                 <td
                   v-else
                   class="text-center"
                   :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >-</td>
-                <td
+                <!-- <td
                   v-if="request.address_2 != 'null'"
                   class="text-center"
                   :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
@@ -124,7 +124,7 @@
                   v-else
                   class="text-center"
                   :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
-                >-</td>
+                >-</td> -->
                 <td
                   class="text-center"
                   :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
@@ -133,20 +133,35 @@
                   class="text-center"
                   :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
                 >
-                  <select
+                  <!-- <select
                     v-if="request.vehicle_id == null"
                     name="category_id"
                     @change="approveRequest(request.id,$event)"
                     class="form-control"
                   >
+                  
                     <option>--- Select Category ---</option>
                     <option
                       v-for="vehicle in vehicles"
                       :key="vehicle.id"
                       :value="vehicle.id"
                     >{{vehicle.name}}</option>
+                  </select>-->
+                  <select
+                    v-if="request.employee_group_id == null"
+                    name="group_id"
+                    @change="approveRequest(request.id,request.email,request.customer_name,request.vehicle_type,$event)"
+                    class="form-control"
+                  >
+                    <!-- group -->
+                    <option value="d0">--- Select Group ---</option>
+                    <option
+                      v-for="group in groups"
+                      :key="group.id"
+                      :value="group.id"
+                    >{{group.group_code}}</option>
                   </select>
-                  <p v-else>{{request.vehicle['name']}}</p>
+                  <!-- <p v-else>{{request.vehicle['name']}}</p> -->
 
                   <!-- <multiselect
                     v-model="request.vehicle"
@@ -211,14 +226,12 @@ export default {
       cmfPwd: false,
       load_data: true,
       selectedVehicle: null,
-      vehicles: []
+      vehicles: [],
+      groups: []
     };
   },
-  filters:{
-   
-  },
-  computed: {
-  },
+  filters: {},
+  computed: {},
   mounted() {
     this.populateRequest();
   },
@@ -226,12 +239,9 @@ export default {
     onChange(event) {
       console.log(event.target.value);
     },
-    approveRequest(id, event) {
-      // console.log(event.target.value);
-      // var vehicle = this.requests.data[0].vehicle;
-      // console.log(vehicle);
+    approveRequest(id, customerEmail,customerName, vehicleType , event) {
+      var grp_id = event.target.value;
       if (event.target.value != undefined || event.target.value != null) {
-        console.log(event.target.value);
         this.$swal
           .fire({
             title: "Are you sure?",
@@ -243,59 +253,83 @@ export default {
             confirmButtonText: "Yes, approve it!"
           })
           .then(result => {
-            axios
-              .post("/approve/customer/request", {
-                id: id,
-                vehicle_id: event.target.value
-              })
-              .then(res => {
-                console.log(res);
-                if (res.status == 200) {
-                  if (res.data == "Success") {
-                    this.populateRequest();
-                    Vue.notify({
-                      group: "foo",
-                      type: "success",
-                      title: "Important message",
-                      text: "Request approved success!"
-                    });
-                    if (result.value) {
-                      this.$swal.fire(
-                        "Approved!",
-                        "Request has been approved.",
-                        "success"
-                      );
+            if (result.value) {
+              axios
+                .post("/approve/customer/request", {
+                  id: id,
+                  group_id: event.target.value
+                })
+                .then(res => {
+                  if (res.status == 200) {
+                    if (res.data == "Success") {
+                      this.populateRequest();
+                      this.sendMailToCustomer(customerEmail,customerName,vehicleType,grp_id);
+                      Vue.notify({
+                        group: "foo",
+                        type: "success",
+                        title: "Important message",
+                        text: "Request approved success!"
+                      });
+                      if (result.value) {
+                        this.$swal.fire(
+                          "Approved!",
+                          "Request has been approved.",
+                          "success"
+                        );
+                      }
+                    } else {
+                      Vue.notify({
+                        group: "foo",
+                        type: "warn",
+                        title: "Important message",
+                        text: "Request approved fail!"
+                      });
                     }
-                  } else {
+                  } else if (res.status == 500) {
                     Vue.notify({
                       group: "foo",
                       type: "warn",
                       title: "Important message",
-                      text: "Request approved fail!"
+                      text: "Server error !"
                     });
                   }
-                } else if (res.status == 500) {
-                  Vue.notify({
-                    group: "foo",
-                    type: "warn",
-                    title: "Important message",
-                    text: "Server error !"
-                  });
-                }
-              })
-              .catch(err => {
-                if (err.response.status == 422)
-                  this.errors = err.response.data.errors;
-              });
+                })
+                .catch(err => {
+                  if (err.response.status == 422)
+                    this.errors = err.response.data.errors;
+                });
+            }
+            event.target.value = "d0";
+            result = null;
           });
       }
     },
+    sendMailToCustomer(customerEmail, customerName, vehicleType, grpId) {
+      console.log("in mail");
+      axios
+        .post("/sendbasicemail/",{
+          customerEmail:customerEmail, 
+          customerName :customerName,
+          vehicleType :vehicleType,
+          grpId:grpId
+        })
+        .then(res => {
+          console.log("in res");
+          console.log(res);
+        })
+        .catch(error => {
+          console.log("in err");
+          console.log(error);
+        });
+    },
+
     populateRequest(page = 1) {
       axios.get("/customer/request/" + this.paginate_count).then(res => {
         if (res.status == 200) {
           console.log(res.data);
           this.requests = res.data["customerRequest"];
           this.vehicles = res.data["vehicles"];
+          this.groups = res.data["group_data"];
           this.load_data = false;
         }
       });

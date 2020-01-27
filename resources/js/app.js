@@ -33,7 +33,9 @@ const routes = [
     { path: '/vehicle', component: require('./components/master_files/vehicle/vehicle_index.vue').default },  
     { path: '/user',component:require('./components/operation/user/user_index.vue').default},   
     { path: '/customer/request', component:require('./components/operation/request/customer_request.vue').default},
-    { path: '/collector/group', component:require('./components/operation/collector_group/group_index.vue').default}
+    { path: '/collector/group', component:require('./components/operation/collector_group/group_index.vue').default},
+    { path: '/vehecle/type/payment/assign', component:require('./components/operation/payment/vehicle_type_payments.vue').default},
+    { path: '/area/payment/assign', component:require('./components/operation/payment/area_payments.vue').default}
   ]
     
   const router = new VueRouter({

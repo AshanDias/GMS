@@ -9,7 +9,7 @@
           alt="AdminLTE Logo"
           class="brand-image img-circle elevation-3"
           style="opacity: .8"
-        />        
+        />
         <span class="brand-text font-weight-light">GMS</span>
       </a>
 
@@ -38,18 +38,15 @@
             <li class="nav-item has-treeview menu-open">
               <router-link to="/" class="nav-link active">
                 <i class="nav-icon fab fa-gripfire"></i>
-                <p>
-                  Dashboard
-                </p>
+                <p>Dashboard</p>
               </router-link>
-           </li>           
+            </li>
             <li class="nav-item has-treeview">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-copy"></i>
                 <p>
                   Operation
                   <i class="fas fa-angle-left right"></i>
-                  <span class="badge badge-info right">6</span>
                 </p>
               </a>
               <ul class="nav nav-treeview">
@@ -57,33 +54,48 @@
                   <router-link to="/customer/request" class="nav-link">
                     <i class="nav-icon fas fa-wave-square"></i>
                     <p>Requests</p>
-                  </router-link>                  
+                  </router-link>
                 </li>
                 <li class="nav-item">
                   <router-link to="/collector/group" class="nav-link">
-                   <i class="fas fa-user-friends nav-icon"></i>
+                    <i class="fas fa-user-friends nav-icon"></i>
                     <p>Collector Groups</p>
-                  </router-link>                
+                  </router-link>
                 </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-cogs"></i>
-                    <p>Group Assign</p>
+                <li class="nav-item has-treeview">
+                  <a class="nav-link">
+                    <i class="nav-icon fas fa-money-bill-wave "></i>
+                    <p>Payment Assign</p>
+                     <i class="fas fa-angle-left right"></i>
                   </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <router-link to="/vehecle/type/payment/assign" class="nav-link">
+                        <i class="nav-icon fas fa-tractor"></i>
+                        <p>Vehicle Type Payment</p>
+                      </router-link>
+                    </li>
+                      <li class="nav-item">
+                      <router-link to="/area/payment/assign" class="nav-link">
+                        <i class="nav-icon fas fa-map"></i>
+                        <p>Area Payment</p>
+                      </router-link>
+                    </li>
+                  </ul>
                 </li>
-                <li v-if="auth == '1'" class="nav-item">                      
+                <li v-if="auth == '1'" class="nav-item">
                   <router-link to="/user" class="nav-link">
-                   <i class="nav-icon fas fa-user-shield"></i>
+                    <i class="nav-icon fas fa-user-shield"></i>
                     <p>User</p>
                   </router-link>
-                </li>                 
+                </li>
               </ul>
-            </li>          
-            
-            <li class="nav-header">Master Files</li>            
+            </li>
+
+            <li class="nav-header">Master Files</li>
             <li class="nav-item">
               <router-link to="/employee" class="nav-link">
-                <i class="nav-icon far fa-user "></i>
+                <i class="nav-icon far fa-user"></i>
                 <p>Employee</p>
               </router-link>
             </li>
@@ -92,7 +104,7 @@
                <i class="nav-icon fas fa-align-center"></i>
                 <p>Employee Type</p>
               </router-link>
-            </li> -->
+            </li>-->
             <li class="nav-item">
               <router-link to="/vehicle" class="nav-link">
                 <i class="nav-icon fas fa-tractor"></i>
@@ -133,8 +145,7 @@
                   </a>
                 </li>
               </ul>
-            </li> -->
-           
+            </li>-->
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -146,6 +157,6 @@
 </template>
 <script>
 export default {
-  props:["auth"]
+  props: ["auth"]
 };
 </script>

@@ -1,5 +1,5 @@
 <?php
-
+ 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +14,10 @@
 // Route::get('/', function () {
 //     return view('home');
 // });
+
+
+
+
 
 
 //Auth::routes(['verify' => true]);
@@ -34,6 +38,7 @@ Route::group(['middleware' => ['web']], function () {
     //vehicle CRUD
     Route::get('/populate/vehicles/{count}','VehicleController@populateVehicle');
     Route::get('/populate/all/data/{count}','VehicleController@index');
+    Route::get('/populate/all/vehicles','VehicleController@vehicleData');
     Route::post('/create/vehicle','VehicleController@store');
     Route::post('/update/vehicle','VehicleController@update');
     Route::get('/delete/vehicle/{id}','VehicleController@destroy');
@@ -52,7 +57,27 @@ Route::group(['middleware' => ['web']], function () {
     //Customer Request
     Route::get('/customer/request/{count}','CustomerRequestController@index');
     Route::post('/approve/customer/request','CustomerRequestController@update');
-   
+    Route::get('/data','CustomerRequestController@data');
+
+    //Customer Rrequest Approve Mail
+    Route::post('/sendbasicemail','MailController@basic_email');
+
+    //Vehicle Payment Assing
+    Route::get('/populate/vehicle/payment/data/get/{count}','VehiclePaymentController@populateInitialData');
+    Route::post('/assign/vehicle/type/payment/post','VehiclePaymentController@store');
+    Route::post('/update/vehicle/type/payment/post','VehiclePaymentController@update');
+    Route::get('/delete/vehicle/type/payment/get/{id}','VehiclePaymentController@destroy');
+
+     //Area Payment Assing
+     Route::get('/populate/area/payment/data/get/{count}','AreaPaymentController@populateInitialData');
+     Route::post('/assign/area/payment/post','AreaPaymentController@store');
+     Route::post('/update/area/payment/post','AreaPaymentController@update');
+     Route::get('/delete/area/payment/get/{id}','AreaPaymentController@destroy');
+
+     //Dashboard
+     Route::get('/dashboard/data','CustomerRequestController@dashboardData');
+    
+    
  
 });
  

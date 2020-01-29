@@ -154,18 +154,18 @@
             </div>
             <!-- /.row -->
             <div class="form-group float-right pt-4">
-              <button type="button" @click="resetForm" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
+              <button type="button" @click="resetForm" class="btn btn-danger">Cancel</button>&nbsp;
               <button
                 v-if="isEdit == false"
                 type="button"
                 @click="createVehicle"
-                class="btn btn-success btn-sm"
+                class="btn btn-success "
               >Submit</button>
               <button
                 v-if="isEdit"
                 type="button"
                 @click="updateVehicle"
-                class="btn btn-primary btn-sm"
+                class="btn btn-primary "
               >Update</button>
             </div>
 
@@ -181,12 +181,12 @@
             <div class="card-tools">
               <div class="input-group input-group-sm" style="width: 250px;">
                 <label for></label>
-                <select class="form-control" name id>
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
+                <select @change="populateVehicle" class="form-control" name id v-model="rpp">
+                  <option v-for="(item,index) in ppi" :key="index">{{item}}</option>
                 </select>&nbsp;
                 <input
+                v-model="search_str"
+                @input="isEmpty(search_str)"
                   type="text"
                   name="table_search"
                   class="form-control float-right"
@@ -194,7 +194,7 @@
                 />
 
                 <div class="input-group-append">
-                  <button type="submit" class="btn btn-default">
+                  <button type="submit" class="btn btn-default" @click="populateInitialData">
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
@@ -202,7 +202,7 @@
             </div>
           </div>
           <!-- /.card-header -->
-          <div class="card-body table-responsive p-0" style="height: 500px;">
+          <div class="card-body table-responsive p-0" style="height: 550px;">
             <table class="table table-head-fixed">
               <thead>
                 <tr>
@@ -244,7 +244,15 @@
             </div>
           </div>
           <!-- /.card-body -->
-
+          <div class="card-footer">
+            <pagination
+              v-if="load_data==false"
+              class="float-right"
+              :limit="2"
+              :data="vehicles"
+              @pagination-change-page="populateVehicle"
+            ></pagination>
+          </div>
           <!-- /.card -->
         </div>
       </div>
@@ -260,22 +268,26 @@ export default {
       regNo: null,
       manufacture_year: "",
       registered_year: "",
-      selected_vehicle_type: {id:null ,type_code:null},
+      selected_vehicle_type:null,
       Vehicle_types: [],
       paginate_count: 10,
       years: [],
-      selectedVehicleStatus: {id:null,status:null},
+      selectedVehicleStatus:null,
       VehicleStatus: [],
       errors: [],
       vehicles: [],
       status:[],
       isEdit: false,
-      load_data: true
+      load_data: true,
+      rpp:10,
+      search_str:null,
+      ppi:[]
 
     };
   },
   mounted() {
     this.populateInitialData();
+    this.itemPerPage();
     //this.populateVehicle();
     
   },
@@ -287,10 +299,8 @@ export default {
       this.regNo= null,
       this.manufacture_year= "",
       this.registered_year= "",
-      this.selected_vehicle_type.id = null;
-      this.selected_vehicle_type.type_code = null;
-      this.selectedVehicleStatus.id = null;
-      this.selectedVehicleStatus.status = null;
+      this.selected_vehicle_type = null; 
+      this.selectedVehicleStatus = null; 
       this.errors = [];
       this.populateVehicle();
     },
@@ -338,9 +348,28 @@ export default {
         });
     },
 
-    populateInitialData()
+    
+    itemPerPage() {
+      axios.get("/prp").then(res => {
+        if (res.status == 200) {
+          this.ppi = res.data;
+        }
+      });
+    },
+
+    isEmpty(x)
+    {
+      if(x == '')
+      this.populateVehicle();
+    },
+
+    populateInitialData(page = 1)
     { 
-        axios.get("/populate/all/data/" + this.paginate_count).then(res => {
+      this.load_data = true
+        axios.post("/populate/all/data?page=" + page,{
+          rpp:this.rpp,
+          search_str:this.search_str
+        }).then(res => {
         if (res.status == 200) {
           this.vehicles = res.data["vehicle_list"];
           this.Vehicle_types = res.data["vehicle_type"];
@@ -362,18 +391,16 @@ export default {
       });
     },
 
-    setVehicleToUpdate(Vehicle) {
+    setVehicleToUpdate(Vehicle) {console.log(Vehicle);
       this.isEdit = true;
       this.id = Vehicle.id;
       this.vname = Vehicle.name;
       this.regNo = Vehicle.reg_no;
       this.manufacture_year= Vehicle.manf_year;
       this.registered_year= Vehicle.reg_year;
-      this.selected_vehicle_type.id = Vehicle.vehicle_type_id;
-      this.selected_vehicle_type.type_code = Vehicle.type_code;
-      this.selectedVehicleStatus.id = Vehicle.status_id;
-      this.selectedVehicleStatus.status = Vehicle.status;
-      console.log(Vehicle);
+      this.selected_vehicle_type = {"id":Vehicle.vehicle_type_id,"type_code":Vehicle.type_code};
+      this.selectedVehicleStatus = {"id":Vehicle.status_id,"status":Vehicle.status}; 
+      
     },
 
     updateVehicle() {

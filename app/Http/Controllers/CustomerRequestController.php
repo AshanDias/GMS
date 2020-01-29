@@ -32,12 +32,11 @@ class CustomerRequestController extends Controller
         ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id')
         ->where('request_date',Carbon::now()->toDateString()) 
         ->orderBy('customer_requests.id','DESC') 
-        ->select('customer_requests.address_1','customer_requests.address_2','customer_requests.address_3','customer_requests.customer_name','vehicle_types.type_code',DB::raw('concat(customer_requests.address_1,customer_requests.address_2,customer_requests.address_3) as title'))
         ->get();
 
         $events = CustomerRequest::join('categories','categories.id','customer_requests.category_id')
         ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id')
-        ->where('request_date',Carbon::now()->toDateString()) 
+        ->whereBetween('request_date',[$monthStartDate,$monthEndDate]) 
         ->orderBy('customer_requests.id','DESC') 
         ->select(DB::raw('concat(customer_requests.address_1,customer_requests.address_2) as title'),'customer_requests.request_date as date' )
         ->get();
@@ -54,8 +53,10 @@ class CustomerRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($count)
+    public function index(Request $request)
     { 
+        $count = $request->rpp;
+        $search_str = $request->search_str;
 
         $customerRequest = CustomerRequest::join('areas','areas.id','customer_requests.area_id')
         ->join('categories','categories.id','customer_requests.category_id')
@@ -65,7 +66,10 @@ class CustomerRequestController extends Controller
         {
             $query->select('id as grp_id','group_code');
         }]) 
-        ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
+        ->where('customer_requests.customer_name','LIKE','%'.$search_str.'%')
+        ->orWhere('customer_requests.tele_no','LIKE','%'.$search_str.'%')
+        ->orWhere('areas.name','LIKE','%'.$search_str.'%')
+        ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')        
         ->orderBy('id','DESC')
         ->paginate($count);
 
@@ -90,29 +94,33 @@ class CustomerRequestController extends Controller
             ->orderBy('id','DESC')
             ->get();
 
-        return $customerRequest;
+        return response($customerRequest,200);
     }
 
-    // public function populateData()
-    // {
-    //     return CustomerRequest::join('areas','areas.id','customer_requests.area_id')
-    //     ->join('categories','categories.id','customer_requests.category_id')
-    //     ->join('statuses','statuses.id','customer_requests.status_id')
-    //     ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
-    //     ->with(['vehicle' => function($quary){
-    //         $quary->select('id','name');
-    //     }])
-    //     ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
-    //     ->orderBy('id','DESC')
-    //     ->paginate($count);
-    // //     return DB::table('customer_requests')
-    // //    ->join('areas','areas.id','customer_requests.area_id')
-    // //    ->join('categories','categories.id','customer_requests.category_id')
-    // //    ->join('statuses','statuses.id','customer_requests.status_id')
-    // //    ->select('customer_requests.*','areas.name','categories.name','statuses.status')
-    // //    ->orderBy('id','DESC')
-    // //    ->get();
-    // }
+    public function populateData()
+    {
+        return CustomerRequest::join('areas','areas.id','customer_requests.area_id')
+        ->join('categories','categories.id','customer_requests.category_id')
+        ->join('statuses','statuses.id','customer_requests.status_id')
+        ->join('vehicle_types','vehicle_types.id','customer_requests.vehicle_type_id') 
+        ->with(['vehicle' => function($quary){
+            $quary->select('id','name');
+        }])
+        ->select('customer_requests.*','areas.name as area_name','categories.name as category_name','statuses.status','statuses.id as status_id','vehicle_types.type_code as vehicle_type')
+        ->orderBy('id','DESC')
+        ->paginate($count);
+    }
+
+    public function driverRequestData()
+    {
+         
+        $customerRequest = CustomerRequest::select('customer_name','address_1','address_2','address_3','longitude'
+        ,'latitude')
+            ->get();
+
+        return $customerRequest;
+     
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -168,9 +176,9 @@ class CustomerRequestController extends Controller
                 $result = $customerRequest->save();
 
                 if($result)
-                    return $customerRequest;
+                return response($customerRequest, 200);
                 else
-                    return '0';
+                return response('0', 422);  
     
             } catch (Exception $th) {
                 return $th;
@@ -222,7 +230,7 @@ class CustomerRequestController extends Controller
 
         $CustomerRequest = CustomerRequest::find($request->id);
         $CustomerRequest->employee_group_id = $request->group_id;
-        $CustomerRequest->status_id = 6;
+        $CustomerRequest->status_id = 8;
         $result = $CustomerRequest->save();
 
         $amount_details = DB::table('customer_requests')
@@ -249,7 +257,7 @@ class CustomerRequestController extends Controller
         $Payment->total_payment = $total_amount;
         $Payment->date = Carbon::now()->toDateString();
         $Payment->time = Carbon::now()->toTimeString();
-        $Payment->status_id = 6;
+        $Payment->status_id = 8;
         $result2 = $Payment->save();
 
         DB::commit();

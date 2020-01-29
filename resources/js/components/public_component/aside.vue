@@ -63,7 +63,7 @@
                   </router-link>
                 </li>
                 <li class="nav-item has-treeview">
-                  <a class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-money-bill-wave "></i>
                     <p>Payment Assign</p>
                      <i class="fas fa-angle-left right"></i>
@@ -111,12 +111,12 @@
                 <p>Vehicle</p>
               </router-link>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-landmark"></i>
                 <p>Area</p>
               </a>
-            </li>
+            </li> -->
             <!-- <li class="nav-item has-treeview">
               <a href="#" class="nav-link">
                 <i class="nav-icon far fa-envelope"></i>

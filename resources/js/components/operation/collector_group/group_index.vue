@@ -128,21 +128,20 @@
 
             <div class="card-tools">
               <div class="input-group input-group-sm" style="width: 250px;">
-                <label for></label>
-                <select class="form-control" name id>
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
-                </select>&nbsp;
+                <!-- <label for></label>
+                 <select @change="populateInitialData" class="form-control" v-model="rpp">
+                <option v-for="(item,index) in ppi" :key="index">{{item}}</option>
+              </select>&nbsp; -->
                 <input
                   type="text"
+                  v-model="search_str"
                   name="table_search"
                   class="form-control float-right"
                   placeholder="Search"
                 />
 
                 <div class="input-group-append">
-                  <button type="submit" class="btn btn-default">
+                  <button type="button" class="btn btn-default" @click="populateInitialData">
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
@@ -168,9 +167,7 @@
                   <td class="text-center">{{group.collector_group[0].name}}</td>
                   <td class="row">
                     <div v-for="(members,index) in group.group_member" :key="index">
-                      <span
-                        class="badge badge-success text-center"
-                      >{{members.name}}</span>&nbsp;
+                      <span class="badge badge-success text-center">{{members.name}}</span>&nbsp;
                     </div>
                   </td>
                   <td class="text-center">
@@ -195,7 +192,15 @@
             </div>
           </div>
           <!-- /.card-body -->
-
+          <div class="card-footer">
+            <!-- <pagination
+              v-if="load_data==false"
+              class="float-right"
+              :limit="2"
+              :data="collector_group_with_members"
+              @pagination-change-page="populateInitialData"
+            ></pagination> -->
+          </div>
           <!-- /.card -->
         </div>
       </div>
@@ -225,11 +230,15 @@ export default {
       isEdit: false,
       load_data: true,
       selectedWorkers: [],
-      collector_group_with_members: []
+      collector_group_with_members: [],
+      rpp: 10,
+      search_str: null,
+      ppi: []
     };
   },
   mounted() {
     this.populateInitialData();
+    // this.itemPerPage();
     //this.populateVehicle();
   },
   methods: {
@@ -292,23 +301,36 @@ export default {
         .catch(err => {
           if (err.response.status == 422)
             this.errors = err.response.data.errors;
-            console.log(this.errors);
-        });  
+          console.log(this.errors);
+        });
     },
 
-    populateInitialData() {
-      axios.get("/collector/groups/" + this.paginate_count).then(res => {
-        if (res.status == 200) {          
-          this.drivers = res.data["drivers"];
-          this.workers = res.data["workers"];
-          this.groups = res.data["groups"];
-          this.vehicles = res.data["vehicles"];
-          this.collector_group_with_members =
-            res.data["collector_group_with_members"];
-          console.log(this.vehicles);
-          this.load_data = false;
-        }
-      });
+    // itemPerPage() {
+    //   axios.get("/prp").then(res => {
+    //     if (res.status == 200) {
+    //       this.ppi = res.data;
+    //     }
+    //   });
+    // },
+
+    populateInitialData(page = 1) {
+      this.load_data = true;
+      axios
+        .post("/collector/groups?page=" + page, {
+          rpp: this.rpp,
+          search_str: this.search_str
+        })
+        .then(res => {
+          if (res.status == 200) {
+            this.drivers = res.data["drivers"];
+            this.workers = res.data["workers"];
+            this.groups = res.data["groups"];
+            this.vehicles = res.data["vehicles"];
+            this.collector_group_with_members =
+              res.data["collector_group_with_members"];
+            this.load_data = false;
+          }
+        });
     },
 
     populateVehicle(page = 1) {
@@ -325,11 +347,17 @@ export default {
     setGroupToUpdate(group) {
       console.log(group.collector_group);
       this.isEdit = true;
-      this.selectedDriver = {"id":group.collector_group[0].driver_id,"name":group.collector_group[0].name};
-      this.selectedVehicle = {"id":group.collector_group[0].vehicle_id,"reg_no":group.collector_group[0].reg_no};
+      this.selectedDriver = {
+        id: group.collector_group[0].driver_id,
+        name: group.collector_group[0].name
+      };
+      this.selectedVehicle = {
+        id: group.collector_group[0].vehicle_id,
+        reg_no: group.collector_group[0].reg_no
+      };
       this.group_code = group.collector_group[0].group_code;
       this.workers = group.group_member;
-      // 
+      //
       // this.id = Vehicle.id;
       // this.vname = Vehicle.name;
       // this.regNo = Vehicle.reg_no;

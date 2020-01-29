@@ -31,20 +31,19 @@
           <div class="card-tools">
             <div class="input-group input-group-sm" style="width: 250px;">
               <label for></label>
-              <select class="form-control" name id v-model="paginate_count">
-                <option>10</option>
-                <option>50</option>
-                <option>100</option>
+              <select @change="populateRequest" class="form-control" name id v-model="page_count">
+                <option v-for="(item,index) in ppi" :key="index">{{item}}</option>
               </select>&nbsp;
               <input
                 type="text"
+                v-model="search_str"
                 name="table_search"
                 class="form-control float-right"
                 placeholder="Search"
               />
 
               <div class="input-group-append">
-                <button type="submit" class="btn btn-default">
+                <button type="button" class="btn btn-default" @click="populateRequest" >
                   <i class="fas fa-search"></i>
                 </button>
               </div>
@@ -52,19 +51,19 @@
           </div>
         </div>
         <!-- /.card-header table-head-fixed -->
-        <div class="card-body table-responsive p-0" style="height: 500px;">
+        <div class="card-body table-responsive p-0" style="height: 600px;">
           <table class="table">
             <thead>
               <tr>
                 <th class="text-center">#</th>
                 <th class="text-center">Customer Name</th>
                 <th class="text-center">Email</th>
+                <th class="text-center">Contact No.</th> 
                 <th class="text-center">Area</th>
                 <th class="text-center">Category</th>
                 <th class="text-center">Vehicle Type</th>
                 <th class="text-center">Address</th>
-                <!-- <th class="text-center">Address 2</th>
-                <th class="text-center">Address 3</th>  -->
+                <th class="text-center">Date</th>                
                 <th class="text-center">Status</th>
                 <th class="text-center">Action</th>
               </tr>
@@ -73,80 +72,58 @@
               <tr v-for="(request,index) in requests.data" :key="index">
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green':request.status_id == 8 ?'bg-gradient-primary':'bg-gradient-warning'"
                 >{{request.id}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.customer_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.email}}</td>
+                 <td
+                  class="text-center"
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                >{{request.tele_no}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.area_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.category_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.vehicle_type}}</td>
                 <td
                   v-if="request.address_1 != 'null'"
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.address_1}}&nbsp;{{request.address_2!='null'? ', '+request.address_2: '' }}&nbsp;{{request.address_3!='null'? ', '+request.address_3: '' }}</td>
                 <td
                   v-else
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
-                >-</td>
-                <!-- <td
-                  v-if="request.address_2 != 'null'"
-                  class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
-                >{{request.address_2}}</td>
-                <td
-                  v-else
-                  class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >-</td>
                 <td
-                  v-if="request.address_3 != 'null'"
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
-                >{{request.address_3}}</td>
-                <td
-                  v-else
-                  class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
-                >-</td> -->
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                >
+                  {{request.request_date }}
+                  <br />
+                  {{request.request_date | moment("from","now")}}
+                </td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >{{request.status}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':'bg-gradient-warning' "
+                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
                 >
-                  <!-- <select
-                    v-if="request.vehicle_id == null"
-                    name="category_id"
-                    @change="approveRequest(request.id,$event)"
-                    class="form-control"
-                  >
-                  
-                    <option>--- Select Category ---</option>
-                    <option
-                      v-for="vehicle in vehicles"
-                      :key="vehicle.id"
-                      :value="vehicle.id"
-                    >{{vehicle.name}}</option>
-                  </select>-->
                   <select
                     v-if="request.employee_group_id == null"
                     name="group_id"
@@ -161,32 +138,6 @@
                       :value="group.id"
                     >{{group.group_code}}</option>
                   </select>
-                  <!-- <p v-else>{{request.vehicle['name']}}</p> -->
-
-                  <!-- <multiselect
-                    v-model="request.vehicle"
-                    deselect-label="Can't remove this value"
-                    track-by="id"
-                    label="name"
-                    placeholder="Select one"
-                    :options="vehicles"
-                    :searchable="false"
-                    :allow-empty="false"   
-                    :close-on-select="true"                 
-                    required
-                    @input="approveRequest(request.id,index)"
-                  ></multiselect>-->
-                  <!--":options="EmployeeStatus"  @select="approveRequest(request.id)" -->
-                  <!-- <div class="row">
-                    <button
-                      type="button"
-                      class="btn btn-success btn-xs"
-                      data-toggle="modal"
-                      data-target="#modal-sm" 
-                    >Approve</button>                  
-                   
-                    <button type="button" class="btn btn-danger btn-xs">Refuse</button>
-                  </div>-->
                 </td>
               </tr>
             </tbody>
@@ -200,8 +151,13 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer">
-          <!-- <pagination v-if="load_data==false" class="float-right" :limit="2" :data="bookings" 
-          @pagination-change-page="populateUser"></pagination>-->
+          <pagination
+            v-if="load_data==false"
+            class="float-right"
+            :limit="2"
+            :data="requests"
+            @pagination-change-page="populateRequest"
+          ></pagination>
         </div>
         <!-- /.card -->
       </div>
@@ -219,27 +175,30 @@ export default {
       user_type: "",
       password: "",
       cmf_password: "",
-      paginate_count: 10,
+      page_count: 10,
       errors: [],
       requests: [],
       isEdit: false,
       cmfPwd: false,
       load_data: true,
       selectedVehicle: null,
+      search_str:null,
       vehicles: [],
-      groups: []
+      groups: [],
+      ppi: []
     };
   },
   filters: {},
   computed: {},
   mounted() {
     this.populateRequest();
+    this.itemPerPage();
   },
   methods: {
     onChange(event) {
       console.log(event.target.value);
     },
-    approveRequest(id, customerEmail,customerName, vehicleType , event) {
+    approveRequest(id, customerEmail, customerName, vehicleType, event) {
       var grp_id = event.target.value;
       if (event.target.value != undefined || event.target.value != null) {
         this.$swal
@@ -263,7 +222,12 @@ export default {
                   if (res.status == 200) {
                     if (res.data == "Success") {
                       this.populateRequest();
-                      this.sendMailToCustomer(customerEmail,customerName,vehicleType,grp_id);
+                      this.sendMailToCustomer(
+                        customerEmail,
+                        customerName,
+                        vehicleType,
+                        grp_id
+                      );
                       Vue.notify({
                         group: "foo",
                         type: "success",
@@ -307,11 +271,11 @@ export default {
     sendMailToCustomer(customerEmail, customerName, vehicleType, grpId) {
       console.log("in mail");
       axios
-        .post("/sendbasicemail/",{
-          customerEmail:customerEmail, 
-          customerName :customerName,
-          vehicleType :vehicleType,
-          grpId:grpId
+        .post("/sendbasicemail/", {
+          customerEmail: customerEmail,
+          customerName: customerName,
+          vehicleType: vehicleType,
+          grpId: grpId
         })
         .then(res => {
           console.log("in res");
@@ -322,17 +286,28 @@ export default {
           console.log(error);
         });
     },
-
-    populateRequest(page = 1) {
-      axios.get("/customer/request/" + this.paginate_count).then(res => {
+    itemPerPage() {
+      axios.get("/prp").then(res => {
         if (res.status == 200) {
-          console.log(res.data);
-          this.requests = res.data["customerRequest"];
-          this.vehicles = res.data["vehicles"];
-          this.groups = res.data["group_data"];
-          this.load_data = false;
+          this.ppi = res.data;
         }
       });
+    },
+    populateRequest(page = 1) {
+      axios
+        .post("/customer/request/data?page=" + page, {
+          rpp: this.page_count,
+          search_str:this.search_str
+        })
+        .then(res => {
+          if (res.status == 200) {
+            console.log(res.data);
+            this.requests = res.data["customerRequest"];
+            this.vehicles = res.data["vehicles"];
+            this.groups = res.data["group_data"];
+            this.load_data = false;
+          }
+        });
     },
 
     deleteUser(user) {

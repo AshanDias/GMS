@@ -144,7 +144,7 @@
                 </div>
                 <!-- /.form-group -->
                 <div class="form-group">
-                  <label>Status</label>
+                  <label>Password</label>
                   &nbsp;
                   <div>
                     <div v-if="isEdit  == false" class="input-group mb-3">
@@ -173,6 +173,21 @@
                       <i class="fas fa-key"></i>
                     </button>
                   </div>
+                </div>
+                <div class="form-group float-right pt-4">
+                  <button type="button" @click="resetForm" class="btn btn-danger">Cancel</button>&nbsp;
+                  <button
+                    v-if="isEdit == false"
+                    type="button"
+                    @click="createEmployee"
+                    class="btn btn-success"
+                  >Submit</button>
+                  <button
+                    v-if="isEdit"
+                    type="button"
+                    @click="updateEmployee"
+                    class="btn btn-primary"
+                  >Update</button>
                 </div>
               </div>
               <!-- /.col -->
@@ -224,21 +239,6 @@
               <!-- -- -->
             </div>
             <!-- /.row -->
-            <div class="form-group float-right pt-4">
-              <button type="button" @click="resetForm" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
-              <button
-                v-if="isEdit == false"
-                type="button"
-                @click="createEmployee"
-                class="btn btn-success btn-sm"
-              >Submit</button>
-              <button
-                v-if="isEdit"
-                type="button"
-                @click="updateEmployee"
-                class="btn btn-primary btn-sm"
-              >Update</button>
-            </div>
 
             <!-- /.form-group -->
           </div>
@@ -252,12 +252,12 @@
             <div class="card-tools">
               <div class="input-group input-group-sm" style="width: 250px;">
                 <label for></label>
-                <select class="form-control" name id>
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
+                <select @change="populateEmployee" class="form-control" name id v-model="rpp">
+                  <option v-for="(item,index) in ppi" :key="index">{{item}}</option>
                 </select>&nbsp;
                 <input
+                  v-model="search_str"
+                  @input="isEmpty(search_str)"
                   type="text"
                   name="table_search"
                   class="form-control float-right"
@@ -265,7 +265,7 @@
                 />
 
                 <div class="input-group-append">
-                  <button type="submit" class="btn btn-default">
+                  <button type="submit" class="btn btn-default" @click="populateEmployee">
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
@@ -273,7 +273,7 @@
             </div>
           </div>
           <!-- /.card-header -->
-          <div class="card-body table-responsive p-0" style="height: 500px;">
+          <div class="card-body table-responsive p-0" style="height: 550px;">
             <table class="table table-head-fixed">
               <thead>
                 <tr>
@@ -323,7 +323,15 @@
             </div>
           </div>
           <!-- /.card-body -->
-
+          <div class="card-footer">
+            <pagination
+              v-if="load_data==false"
+              class="float-right"
+              :limit="2"
+              :data="Employees"
+              @pagination-change-page="populateEmployee"
+            ></pagination>
+          </div>
           <!-- /.card -->
         </div>
       </div>
@@ -361,16 +369,20 @@ export default {
       characters: "a-z,A-Z,0-9,#",
       auto: [String, Boolean],
       pwShow: false,
-      value: ""
+      value: "",
+      ppi: [],
+      rpp: 10,
+      search_str: null
     };
   },
   mounted() {
+    this.itemPerPage();
     this.populateEmployee();
     this.generatePassword();
   },
   methods: {
     forgotPassword() {
-      this.$confirm("Are you sure?").then(() => {        
+      this.$confirm("Are you sure?").then(() => {
         axios
           .post("/update/employee/password", {
             id: this.id,
@@ -498,14 +510,34 @@ export default {
         });
     },
 
-    populateEmployee(page = 1) {
-      axios.get("/populate/employees/" + this.paginate_count).then(res => {
+    itemPerPage() {
+      axios.get("/prp").then(res => {
         if (res.status == 200) {
-          this.Employees = res.data;
-          console.log(this.Employees);
-          this.load_data = false;
+          this.ppi = res.data;
         }
       });
+    },
+
+    isEmpty(x)
+    {
+      if(x == '')
+      this.populateEmployee();
+    },
+
+    populateEmployee(page = 1) {
+      this.load_data = true;
+      axios
+        .post("/populate/employees?page=" + page, {
+          rpp: this.rpp,
+          search_str:this.search_str
+        })
+        .then(res => {
+          if (res.status == 200) {
+            this.Employees = res.data;
+            console.log(this.Employees);
+            this.load_data = false;
+          }
+        });
     },
 
     setEmployeeToUpdate(Employee) {

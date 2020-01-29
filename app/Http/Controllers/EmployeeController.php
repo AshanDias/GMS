@@ -28,14 +28,21 @@ class EmployeeController extends Controller
        //
    }
 
-   public function populateEmployee($count)
-   {
+   public function populateEmployee(Request $request)
+   {       
+        $rpp = $request->rpp;
+        $search_str = $request->search_str;
+
        return DB::table('employees')
        ->join('statuses','statuses.id','employees.status_id')
        ->join('user_types','user_types.id','employees.employee_type_id')
+       ->where('employees.first_name','like','%'.$search_str.'%')
+       ->orWhere('employees.last_name','like','%'.$search_str.'%')
+       ->orWhere('employees.nic','like','%'.$search_str.'%')
+       ->orWhere('employees.telephone_no','like','%'.$search_str.'%')
        ->select('employees.*','statuses.status','user_types.name as empType')
        ->orderBy('employees.id','ASC')
-       ->paginate();
+       ->paginate($rpp);
    }
 
    /**
@@ -99,8 +106,8 @@ class EmployeeController extends Controller
 
    
    public function driverLogin(Request $request)
-   {
-        $Employee = Employee::where('nic','894521365V')->first();
+   { 
+        $Employee = Employee::where('nic',$request->nic)->first();
         $passwordHash = $Employee->password; 
         $result = Hash::check($request->password, $passwordHash);
         return json_encode($result);

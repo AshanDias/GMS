@@ -16,15 +16,18 @@ class EmployeeGroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($count)
-    {
+    public function index(Request $request)
+    { 
+        $search_str = $request->search_str;
+
          $drivers = Employee::select(DB::raw("CONCAT(first_name,' ',last_name ) as name"),'id')->where('employee_type_id',4)->where('have_group',0)->get();
          $workers = Employee::select(DB::raw("CONCAT(first_name,' ',last_name ) as name"),'id','employee_type_id')->where('employee_type_id',5)->where('have_group',0)->get();
          $vehicles = Vehicle::select('id','name','reg_no')->where('status_id',1)->where('have_group',0)->get();
          $collector_group = EmployeeGroup::where('employee_groups.status_id',1)         
          ->join('employees','employees.id','employee_groups.driver_id')
          ->join('vehicles','vehicles.id','employee_groups.vehicle_id')
-         ->select('employee_groups.*',DB::raw("CONCAT(employees.first_name,' ',employees.last_name ) as name"),'vehicles.reg_no')
+         ->where('employee_groups.group_code','like','%'.$search_str.'%')
+         ->select('employee_groups.*',DB::raw("CONCAT(employees.first_name,' ',employees.last_name ) as name"),'vehicles.reg_no')         
          ->get();
          
          $group_members=[];

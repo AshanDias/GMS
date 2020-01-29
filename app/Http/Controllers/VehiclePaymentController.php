@@ -19,19 +19,20 @@ class VehiclePaymentController extends Controller
     }
 
     
-    public function populateInitialData($count)
-    {
-        // $vehicleData = DB::table('vehicles') 
-        // ->join('vehicle_types','vehicle_types.id','vehicles.vehicle_type_id')
-        // ->select('vehicles.id as vid','vehicles.name','vehicles.reg_no','vehicle_types.type_code')
-        // ->get();
+    public function populateInitialData(Request $request)
+    { 
+
+        $rpp = $request->rpp;
+        $search_str = $request->search_str;
 
         $vehicleTypeData = DB::table('vehicle_types')  
         ->select( 'vehicle_types.id','vehicle_types.type_code')
         ->get();
 
         $VehiclePayment = VehiclePayment::join('vehicle_types','vehicle_types.id','vehicle_payments.vehicle_type_id')
-        ->select('vehicle_payments.*','vehicle_types.type_code')->paginate($count);
+        ->select('vehicle_payments.*','vehicle_types.type_code')
+        ->where('vehicle_types.type_code','like','%'.$search_str.'%')
+        ->paginate($rpp);
         return array('vehicle_type_data'=>$vehicleTypeData,'payments'=>$VehiclePayment);
     }
 

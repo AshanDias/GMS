@@ -144,12 +144,12 @@
             <div class="card-tools">
               <div class="input-group input-group-sm" style="width: 250px;">
                 <label for></label>
-                <select class="form-control" name id>
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
+                <select @change="populateEmployee" class="form-control" name id v-model="rpp">
+                  <option v-for="(item,index) in ppi" :key="index">{{item}}</option>
                 </select>&nbsp;
                 <input
+                  v-model="search_str"
+                  @input="isEmpty(search_str)"
                   type="text"
                   name="table_search"
                   class="form-control float-right"
@@ -157,7 +157,7 @@
                 />
 
                 <div class="input-group-append">
-                  <button type="submit" class="btn btn-default">
+                  <button type="submit" class="btn btn-default" @click="populateInitialData">
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
@@ -202,7 +202,15 @@
             </div>
           </div>
           <!-- /.card-body -->
-
+          <div class="card-footer">
+            <pagination
+              v-if="load_data==false"
+              class="float-right"
+              :limit="2"
+              :data="payments"
+              @pagination-change-page="populateInitialData"
+            ></pagination>
+          </div>
           <!-- /.card -->
         </div>
       </div>
@@ -225,10 +233,14 @@ export default {
       status: [],
       payments: [],
       isEdit: false,
-      load_data: true
+      load_data: true,
+      search_str: null,
+      rpp: 10,
+      ppi: []
     };
   },
   mounted() {
+    this.itemPerPage();
     this.populateInitialData();
     //this.populateVehicle();
   },
@@ -241,7 +253,17 @@ export default {
       this.price = null;
       this.populateInitialData();
     },
+    itemPerPage() {
+      axios.get("/prp").then(res => {
+        if (res.status == 200) {
+          this.ppi = res.data;
+        }
+      });
+    },
 
+    isEmpty(x) {
+      if (x == "") this.populateInitialData();
+    },
     createPayment() {
       console.log(this.selected_area);
       axios
@@ -282,9 +304,13 @@ export default {
         });
     },
 
-    populateInitialData() {
+    populateInitialData(page = 1) {
+      this.load_data = true;
       axios
-        .get("/populate/area/payment/data/get/" + this.paginate_count)
+        .post("/populate/area/payment/data/get?page=" + page, {
+          rpp: this.rpp,
+          search_str: this.search_str
+        })
         .then(res => {
           if (res.status == 200) {
             this.areas = res.data["areadata"];

@@ -35,13 +35,12 @@
           <div class="col-lg-3 col-6">
             <!-- small box -->
             <div class="small-box bg-info">
-              
               <div class="inner">
                 <div v-if="load_data" class="spinner-border size-25"></div>
                 <h3 v-else>{{today}}</h3>
                 <p>Today</p>
               </div>
-              
+
               <div class="icon">
                 <i class="ion ion-bag"></i>
               </div>
@@ -105,61 +104,65 @@
               <div class="card-header border-0">
                 <h3 class="card-title">Today Request</h3>
                 <div class="card-tools">
-                  <a href="#" class="btn btn-tool btn-sm">
+                  <!-- <a href="#" class="btn btn-tool btn-sm">
                     <i class="fas fa-download"></i>
-                  </a>
-                  <a href="#" class="btn btn-tool btn-sm">
+                  </a>-->
+                  <router-link class="btn btn-tool btn-sm" to="/customer/request">
                     <i class="fas fa-bars"></i>
-                  </a>
+                  </router-link>
                 </div>
               </div>
               <div class="card-body p-0">
                 <table class="table table-striped table-valign-middle">
                   <thead>
-                  <tr>
-                    <th>Customer Name</th>
-                    <th>Category</th>
-                    <th>Address</th>
-                    <th>Vehicle Type</th>
-                    <th>More</th>
-                  </tr>
+                    <tr>
+                      <th>Customer Name</th>
+                      <th>Category</th>
+                      <th>Address</th>
+                      <th>Vehicle Type</th>
+                      <th>Date</th>
+                      <th>More</th>
+                    </tr>
                   </thead>
-                  <tbody  v-if="load_data == false">
-                  <tr v-for="todayRequest in todayRequests.slice(0,7)" :key="todayRequest.id">
-                    <td>
-                      <img src="dist/img/logo-person.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                      {{todayRequest.customer_name}}
-                    </td>
-                    <td>{{todayRequest.name}}</td>
-                    <td>                     
-                      {{todayRequest.address_1}}&nbsp;{{todayRequest.address_2!='null'? ', '+todayRequest.address_2: '' }}&nbsp;{{todayRequest.address_3!='null'? ', '+todayRequest.address_3: '' }}
-                    </td>
-                    <td>
-                       <small class="text-success mr-1">
-                        <i class="fas fa-tractor"></i>                         
-                      </small>
-                      {{todayRequest.type_code}}
-                    </td>
-                    <td>
-                     <router-link to="/customer/request">
-                        <i class="fas fa-search"></i>
-                     </router-link>
-                    </td>
-                  </tr>                 
+                  <tbody v-if="load_data == false">
+                    <tr v-for="todayRequest in todayRequests.slice(0,7)" :key="todayRequest.id">
+                      <td>
+                        <img
+                          src="dist/img/logo-person.png"
+                          alt="Product 1"
+                          class="img-circle img-size-32 mr-2"
+                        />
+                        {{todayRequest.customer_name}}
+                      </td>
+                      <td>{{todayRequest.name}}</td>
+                      <td>{{todayRequest.address_1}}&nbsp;{{todayRequest.address_2!='null'? ', '+todayRequest.address_2: '' }}&nbsp;{{todayRequest.address_3!='null'? ', '+todayRequest.address_3: '' }}</td>
+                      <td>
+                        <small class="text-success mr-1">
+                          <i class="fas fa-tractor"></i>
+                        </small>
+                        {{todayRequest.type_code}}
+                      </td>
+                      <td>{{todayRequest.request_date | moment("from","now")}}</td>
+                      <td>
+                        <router-link to="/customer/request">
+                          <i class="fas fa-search"></i>
+                        </router-link>
+                      </td>
+                    </tr>
                   </tbody>
                   <tbody v-else-if="load_data == true">
                     <td></td>
                     <td></td>
                     <td>
-                    <div class="spinner-grow text-muted"></div>
-                    <div class="spinner-grow text-primary"></div>
-                    <div class="spinner-grow text-success"></div>
-                    <div class="spinner-grow text-info"></div>
-                    <div class="spinner-grow text-warning"></div>
-                    <div class="spinner-grow text-danger"></div>
-                    <div class="spinner-grow text-secondary"></div>
-                    <div class="spinner-grow text-dark"></div>
-                    <div class="spinner-grow text-light"></div>
+                      <div class="spinner-grow text-muted"></div>
+                      <div class="spinner-grow text-primary"></div>
+                      <div class="spinner-grow text-success"></div>
+                      <div class="spinner-grow text-info"></div>
+                      <div class="spinner-grow text-warning"></div>
+                      <div class="spinner-grow text-danger"></div>
+                      <div class="spinner-grow text-secondary"></div>
+                      <div class="spinner-grow text-dark"></div>
+                      <div class="spinner-grow text-light"></div>
                     </td>
                     <td></td>
                     <td></td>
@@ -167,49 +170,9 @@
                 </table>
               </div>
             </div>
-            <!-- <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">
-                  <i class="fas fa-chart-pie mr-1"></i>
-                  Today Request
-                </h3>
-                <div class="card-tools">
-                  <ul class="nav nav-pills ml-auto">
-                    <li class="nav-item">
-                      <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
-                    </li>
-                   
-                  </ul>
-                </div>
-              </div> 
-              <div class="card-body">
-                <div class="tab-content p-0"> 
-                  <div
-                    class="chart tab-pane active"
-                    id="revenue-chart"
-                    style="position: relative; height: 300px;"
-                  >
-                    <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
-                  </div>
-                  <div
-                    class="chart tab-pane"
-                    id="sales-chart"
-                    style="position: relative; height: 300px;"
-                  >
-                    <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
-                  </div>
-                </div>
-              </div>
-              
-            </div> -->
-            <!-- /.card -->
-
-            <!-- TO DO List -->
-
             <!-- /.card -->
           </section>
           <!-- /.Left col -->
-          <!-- right col (We are only adding the ID to make the widgets sortable)-->
           <section class="col-lg-5 connectedSortable">
             <!-- Map card -->
             <div class="card">
@@ -251,11 +214,7 @@ export default {
   },
   data() {
     return {
-      event_list:[],
-      //  [
-      //   { title: "event 1", date: "2019-12-01" },
-      //   { title: "event 2", date: "2019-12-02" }
-      // ],
+      event_list: [],
       calendarPlugins: [dayGridPlugin],
       today: null,
       thisWeek: null,
@@ -282,7 +241,7 @@ export default {
           }
         })
         .catch(err => {
-           this.load_data = false;
+          this.load_data = false;
           console.log(err);
         });
     }

@@ -11,7 +11,6 @@ import VueRouter from 'vue-router'
 import Notifications from 'vue-notification'
 import VuejsDialog from 'vuejs-dialog';
 import VueSimpleAlert from "vue-simple-alert";
-import Paginate from 'vuejs-paginate'
 import Multiselect from 'vue-multiselect'
 import VueSweetalert2 from 'vue-sweetalert2';
 // import vuepassword from './components/public_component/vuepassword';
@@ -22,8 +21,8 @@ Vue.use(Notifications)
 Vue.use(VuejsDialog);
 Vue.use(VueSimpleAlert);
 Vue.use(VueSweetalert2);
-// Vue.use('vuepassword',vuepassword);
-Vue.component('pagination', Paginate)
+Vue.use(require('vue-moment'));
+Vue.component('pagination', require('laravel-vue-pagination'));
 Vue.component('multiselect', Multiselect)
 
 const routes = [

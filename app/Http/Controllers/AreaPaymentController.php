@@ -18,12 +18,17 @@ class AreaPaymentController extends Controller
    }
 
    
-   public function populateInitialData($count)
+   public function populateInitialData(Request $request)
    { 
-       $areaData = Area::select('id','name')->get(); 
+        $rpp = $request->rpp;
+        $search_str = $request->search_str;
+       
+        $areaData = Area::select('id','name')->get(); 
        
        $areaPayment = AreaPayment::join('areas','areas.id','area_payments.area_id')
-       ->select('area_payments.id as pid','area_payments.price','areas.id','areas.name')->paginate($count);
+       ->select('area_payments.id as pid','area_payments.price','areas.id','areas.name')
+       ->where('areas.name','like','%'. $search_str.'%')
+       ->paginate($rpp);
        return array('areadata'=>$areaData,'payments'=>$areaPayment);
    }
 

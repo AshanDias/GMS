@@ -15,11 +15,20 @@ class HasApiToken
      */
     public function handle($request, Closure $next)
     {
-        if($request->header('apitoken')!='abcdefgh'){
-            
-            return response()->json(['message'=>'unautorized access!'],401);
+        $secret_key = "";
+        // if($request->header('apitoken') == null)
+        // return redirect('/401');
+        if($request->header('apitoken') !='abcdefgh')
+        { 
+            return redirect('/401');
             
         }
-        return $next($request);
+        else
+        {
+           // $message = "Unauthorized";            
+           return $next($request);
+            
+        }
+       
     }
 }

@@ -11,18 +11,18 @@ class MailController extends Controller {
     public function basic_email(Request $request) {
         //{customerEmail: "w.l.n.ishara@gmail.com", customerName: "Test2", vehicleType: "tractor", grpId: "d0"}   
         $emailTo = $request->customerEmail;
-        $emailFrom = 'xyz@gmail.com';
+        $emailFrom = 'info@garb.tk';
         $name = $request->customerName;
         $vType =  $request->vehicleType; 
         $messageText = "Your Garbage request was approved. Thank you!";  
-        $data = array('name'=>$name,'emailTo' => $emailTo,'emailFrom' => 'xyz@gmail.com','messageText'=>$messageText);
+        $data = array('name'=>$name,'emailTo' => $emailTo,'emailFrom' => $emailFrom,'messageText'=>$messageText);
 
          try {
             
                 Mail::send(['text'=>'mail'], $data , function($message) use ($emailTo,$emailFrom,$name,$messageText){
                 $message->to($emailTo,$name)
                 ->subject($messageText);                
-                $message->from('xyz@gmail.com','GMS Team Maharagama Urban Council');
+                $message->from('info@garb.tk','GMS Team Maharagama Urban Council');
             
             });
 

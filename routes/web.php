@@ -20,8 +20,6 @@ Route::get('/401', function() {
     return view('error');
 });
 
-
-
 Auth::routes(['verify' => true]);
 Auth::routes();
 // Route::group(['middleware' => ['web']], function () { 
@@ -86,32 +84,37 @@ Route::group(['middleware' => 'verified'], function () {
  
 });
 
+//test
+
+Route::get('/show/{id}', 'CustomerRequestController@show');
+
  
 //Mobile Web api
 
 //Customer
-// Route::post('/customer/create','CustomerController@store');
-// Route::get('/customer/email/{email}','CustomerController@index');
-// Route::get('/customer/all','CustomerController@all');
+Route::post('/customer/create','CustomerController@store');
+Route::get('/customer/email/{email}','CustomerController@index');
+Route::get('/customer/all','CustomerController@all');
 
-// //CustomerRequest
-// Route::post('/customer/request','CustomerRequestController@store');
-// Route::get('/customer/all/request','CustomerRequestController@populateData');
-// Route::get('/customer/request/email/{email}','CustomerRequestController@userViceData');
-// Route::get('/driver/request/get','CustomerRequestController@driverRequestData');
+//CustomerRequest
+Route::post('/customer/request','CustomerRequestController@store');
+Route::get('/customer/all/request','CustomerRequestController@populateData');
+Route::get('/customer/request/email/{email}','CustomerRequestController@userViceData');
+Route::get('/driver/request/get','CustomerRequestController@driverRequestData');
 
-// //Area
-// Route::get('/areas/all','AreaController@populateArea');
+//Area
+Route::get('/areas/all','AreaController@populateArea');
 
-// //Category
-// Route::get('/category/all','CategoryController@populateCategory');
+//Category
+Route::get('/category/all','CategoryController@populateCategory');
 
-// //Vehicle
-// Route::get('/vehicle/types','VehicleTypeController@populateData');
+//Vehicle
+Route::get('/vehicle/types','VehicleTypeController@populateData');
 
-// //Payment
-// Route::get('/payment/history/email/{email}','PaymentController@index'); 
+//Payment
+Route::get('/payment/history/email/{email}','PaymentController@index'); 
+Route::post('/payment/approve','PaymentDetailController@store');
 
-// //Driver Login
-// Route::post('/driver/login','EmployeeController@driverLogin');
+//Driver Login
+Route::post('/driver/login','EmployeeController@driverLogin');
 

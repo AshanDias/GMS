@@ -92,11 +92,5 @@ class DatabaseSeeder extends Seeder
             'name' => 'Normal',            
         ]); 
         
-
-        DB::table('')->insert([
-
-        ]);
-
-
     }
 }

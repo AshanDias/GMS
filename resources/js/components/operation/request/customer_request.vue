@@ -72,45 +72,45 @@
               <tr v-for="(request,index) in requests.data" :key="index">
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green':request.status_id == 8 ?'bg-gradient-primary':'bg-gradient-warning'"
+                  :class="request.status_id==7 ?'bg-gradient-green':request.status_id == 8 ?'bg-gradient-warning':'bg-info'"
                 >{{request.id}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.customer_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.email}}</td>
                  <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.tele_no}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.area_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.category_name}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.vehicle_type}}</td>
                 <td
                   v-if="request.address_1 != 'null'"
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.address_1}}&nbsp;{{request.address_2!='null'? ', '+request.address_2: '' }}&nbsp;{{request.address_3!='null'? ', '+request.address_3: '' }}</td>
                 <td
                   v-else
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >-</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >
                   {{request.request_date }}
                   <br />
@@ -118,11 +118,11 @@
                 </td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >{{request.status}}</td>
                 <td
                   class="text-center"
-                  :class="request.status_id==6 ?'bg-gradient-green': request.status_id == 8 ?'bg-gradient-primary': 'bg-gradient-warning' "
+                  :class="request.status_id==7 ?'bg-gradient-green': request.status_id == 8 ? 'bg-gradient-warning':'bg-info' "
                 >
                   <select
                     v-if="request.employee_group_id == null"
@@ -271,7 +271,7 @@ export default {
     sendMailToCustomer(customerEmail, customerName, vehicleType, grpId) {
       console.log("in mail");
       axios
-        .post("/sendbasicemail/", {
+        .post("/sendbasicemail", {
           customerEmail: customerEmail,
           customerName: customerName,
           vehicleType: vehicleType,

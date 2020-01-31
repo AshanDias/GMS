@@ -140,21 +140,17 @@ class CustomerRequestController extends Controller
      */
     public function store(Request $request)
     { 
-        
-        // $this->validate($request,[
-        //     'user_id'=>'required|max:50',
-        //     'longitude'=>'required',
-        //     'latitude'=>'required',
-        //     'address'=>'required',
-        //     'category_id'=>'required'
-        //   ]);
+       
         $customer_id = Customer::where('email',$request->email)->select('id')->first();
+        
         if($customer_id == null)
         {
             return response("Please register first!",404);
         }
         else
         {
+            DB::beginTransaction(); 
+
             try {
                 $customerRequest = new CustomerRequest();
                 $customerRequest->user_id =  $customer_id->id;
@@ -170,18 +166,52 @@ class CustomerRequestController extends Controller
                 $customerRequest->address_2 =  $request->address_2;
                 $customerRequest->address_3 =  $request->address_3;
                 $customerRequest->category_id =  $request->category_id;
-                $customerRequest->status_id =3;
+                $customerRequest->status_id =8;
                 $customerRequest->request_date = Carbon::now()->toDateString();
                 $customerRequest->request_time = Carbon::now()->toTimeString();
-                $result = $customerRequest->save();
+                $result = $customerRequest->save(); 
 
-                if($result)
-                return response($customerRequest, 200);
+                $amount_details = CustomerRequest::join('vehicle_payments','vehicle_payments.vehicle_type_id','customer_requests.vehicle_type_id')
+                ->join('area_payments','area_payments.area_id','customer_requests.area_id') 
+                ->where('customer_requests.id',$customerRequest->id) 
+                ->select('customer_requests.id as requestId','customer_requests.user_id','vehicle_payments.price as v_type_price','area_payments.price as area_price')
+                ->first();
+ 
+                $request_id = $amount_details->requestId;
+                $customer_id = $amount_details->user_id;
+                $customer_name = $amount_details->customer_name;
+                $v_type_price = $amount_details->v_type_price;
+                $area_price = $amount_details->area_price;
+                $total_amount = $v_type_price + $area_price;
+                
+                 
+
+                $Payment = new Payment();
+                $Payment->customers_id = $customer_id;
+                $Payment->name = $customer_name;
+                $Payment->customers_request_id = $request_id;
+                $Payment->total_payment = $total_amount;
+                $Payment->date = Carbon::now()->toDateString();
+                $Payment->time = Carbon::now()->toTimeString();
+                $Payment->status_id = 8;
+                $result2 = $Payment->save();
+
+                $CustomerRequest = CustomerRequest::join('payments','payments.customers_request_id','customer_requests.id')->where('customer_requests.id',$request_id)->first();
+                
+                
+                DB::commit();
+                
+
+                if($result && $result2)
+                return response($CustomerRequest, 200);
                 else
                 return response('0', 422);  
     
             } catch (Exception $th) {
-                return $th;
+                
+                DB::rollback();
+                
+                return $th->getMessage();
             }
         }
     }
@@ -192,9 +222,18 @@ class CustomerRequestController extends Controller
      * @param  \App\CustomerRequest  $customerRequest
      * @return \Illuminate\Http\Response
      */
-    public function show(CustomerRequest $customerRequest)
+    public function show($id)
     {
-        //
+        return DB::table('customer_requests')
+       // ->join('employee_groups','employee_groups.id','customer_requests.employee_group_id')
+        ->join('vehicles','vehicles.id','employee_groups.vehicle_id') 
+        ->join('vehicle_payments','vehicle_payments.vehicle_type_id','vehicles.vehicle_type_id')
+        ->join('area_payments','area_payments.area_id','customer_requests.area_id') 
+        ->where('customer_requests.id',$id)        
+        ->select('vehicle_payments.price as v_type_price','area_payments.price as area_price','customer_requests.user_id','customer_requests.customer_name')
+        ->get();
+
+        
     }
 
     /**
@@ -217,10 +256,7 @@ class CustomerRequestController extends Controller
      */
     public function update(Request $request)
     {
-
-        //return $request;
-        //calculate amount
-       
+ 
        try {
         
         DB::beginTransaction(); 
@@ -230,39 +266,12 @@ class CustomerRequestController extends Controller
 
         $CustomerRequest = CustomerRequest::find($request->id);
         $CustomerRequest->employee_group_id = $request->group_id;
-        $CustomerRequest->status_id = 8;
+        $CustomerRequest->status_id = 7;
         $result = $CustomerRequest->save();
-
-        $amount_details = DB::table('customer_requests')
-        ->join('employee_groups','employee_groups.id','customer_requests.employee_group_id')
-        ->join('vehicles','vehicles.id','employee_groups.vehicle_id') 
-        ->join('vehicle_payments','vehicle_payments.vehicle_type_id','vehicles.vehicle_type_id')
-        ->join('area_payments','area_payments.area_id','customer_requests.area_id') 
-        ->where('customer_requests.id',$request->id)        
-        ->select('vehicle_payments.price as v_type_price','area_payments.price as area_price','customer_requests.user_id','customer_requests.customer_name')
-        ->first();
- 
-        $request_id = $request->id;
-        $customer_id = $amount_details->user_id;
-        $customer_name = $amount_details->customer_name;
-        $v_type_price = $amount_details->v_type_price;
-        $area_price = $amount_details->area_price;
-        $total_amount = $v_type_price + $area_price;
-        
-
-        $Payment = new Payment();
-        $Payment->customers_id = $customer_id;
-        $Payment->name = $customer_name;
-        $Payment->customers_request_id = $request_id;
-        $Payment->total_payment = $total_amount;
-        $Payment->date = Carbon::now()->toDateString();
-        $Payment->time = Carbon::now()->toTimeString();
-        $Payment->status_id = 8;
-        $result2 = $Payment->save();
 
         DB::commit();
         
-        if($result && $result2)
+        if($result)
             return 'Success';
         else
             return '0';

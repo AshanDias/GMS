@@ -57,6 +57,12 @@
                   </router-link>
                 </li>
                 <li class="nav-item">
+                  <router-link to="/map/view" class="nav-link">
+                    <i class="nav-icon fas fa-map"></i>
+                    <p>Map View</p>
+                  </router-link>
+                </li>
+                <li class="nav-item">
                   <router-link to="/collector/group" class="nav-link">
                     <i class="fas fa-user-friends nav-icon"></i>
                     <p>Collector Groups</p>

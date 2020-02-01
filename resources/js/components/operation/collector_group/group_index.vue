@@ -51,19 +51,19 @@
                     v-model="group_code"
                     placeholder="Group Code"
                   />
-                  <span v-if="errors.name">
-                    <p class="text-danger">{{errors.name[0]}}</p>
+                  <span v-if="errors.group_code">
+                    <p class="text-danger">{{errors.group_code[0]}}</p>
                   </span>
                 </div>
                 <div class="form-group">
                   <label>Vehicle</label>
-                    &nbsp;
+                  &nbsp;
                   <div>
                     <multiselect
                       v-model="selectedVehicle"
                       deselect-label="Can't remove this value"
                       track-by="id"
-                      label="name"
+                      label="reg_no"
                       placeholder="Select one"
                       :options="vehicles"
                       :searchable="false"
@@ -83,10 +83,10 @@
                   &nbsp;
                   <div>
                     <multiselect
-                      v-model="driver"
+                      v-model="selectedDriver"
                       deselect-label="Can't remove this value"
                       track-by="id"
-                      label="first_name"
+                      label="name"
                       placeholder="Select one"
                       :options="drivers"
                       :searchable="false"
@@ -103,12 +103,12 @@
               label="name"
               @onChangeList="onChangeList"
             />
-                 <div class="form-group float-right pt-4">
+            <div class="form-group float-right pt-4">
               <button type="button" @click="resetForm" class="btn btn-danger btn-sm">Cancel</button>&nbsp;
               <button
                 v-if="isEdit == false"
                 type="button"
-                @click="createVehicle"
+                @click="createGroup"
                 class="btn btn-success btn-sm"
               >Submit</button>
               <button
@@ -118,75 +118,67 @@
                 class="btn btn-primary btn-sm"
               >Update</button>
             </div>
-
           </div>
           <!-- /.card-body -->
-          
         </div>
 
-        <!-- <div class="card">
+        <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Vehicle List</h3>
+            <h3 class="card-title">Employee Group List</h3>
 
             <div class="card-tools">
               <div class="input-group input-group-sm" style="width: 250px;">
-                <label for></label>
-                <select class="form-control" name id>
-                  <option>10</option>
-                  <option>50</option>
-                  <option>100</option>
-                </select>&nbsp;
+                <!-- <label for></label>
+                 <select @change="populateInitialData" class="form-control" v-model="rpp">
+                <option v-for="(item,index) in ppi" :key="index">{{item}}</option>
+              </select>&nbsp; -->
                 <input
                   type="text"
+                  v-model="search_str"
                   name="table_search"
                   class="form-control float-right"
                   placeholder="Search"
                 />
 
                 <div class="input-group-append">
-                  <button type="submit" class="btn btn-default">
+                  <button type="button" class="btn btn-default" @click="populateInitialData">
                     <i class="fas fa-search"></i>
                   </button>
                 </div>
               </div>
             </div>
-        </div>-->
-        <!-- /.card-header -->
-        <!-- <div class="card-body table-responsive p-0" style="height: 500px;">
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body table-responsive p-0" style="height: 500px;">
             <table class="table table-head-fixed">
               <thead>
                 <tr>
                   <th class="text-center">#</th>
-                  <th class="text-center">Name</th>
-                  <th class="text-center">Vehicle No</th>
-                  <th class="text-center">Status</th>
+                  <th class="text-center">Group Code</th>
+                  <th class="text-center">Driver</th>
+                  <th class="text-center">Group Members</th>
                   <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(vehicle,index) in vehicles.data" :key="index">
-                  <td class="text-center">{{vehicle.id}}</td>
-                  <td class="text-center">{{vehicle.name}}</td>
-                  <td class="text-center">{{vehicle.reg_no}}</td>
-                  <td class="text-center">
-                    <span
-                      v-if="vehicle.status_id == 1"
-                      class="badge badge-success"
-                    >{{vehicle.status}}</span>
-                    <span
-                      v-if="vehicle.status_id == 2"
-                      class="badge badge-danger"
-                    >{{vehicle.status}}</span>
+                <tr v-for="(group,index) in collector_group_with_members" :key="index">
+                  <td class="text-center">{{group.collector_group[0].id}}</td>
+                  <td class="text-center">{{group.collector_group[0].group_code}}</td>
+                  <td class="text-center">{{group.collector_group[0].name}}</td>
+                  <td class="row">
+                    <div v-for="(members,index) in group.group_member" :key="index">
+                      <span class="badge badge-success text-center">{{members.name}}</span>&nbsp;
+                    </div>
                   </td>
                   <td class="text-center">
                     <button
                       type="button"
-                      @click="setVehicleToUpdate(vehicle)"
+                      @click="setGroupToUpdate(group)"
                       class="btn btn-primary"
                     >Edit</button>
                     <button
                       type="button"
-                      @click="deleteVehicle(vehicle)"
+                      @click="deleteVehicle(group)"
                       class="btn btn-danger"
                     >Delete</button>
                   </td>
@@ -198,11 +190,19 @@
                 <span class="sr-only">Loading...</span>
               </div>
             </div>
-        </div>-->
-        <!-- /.card-body -->
-
-        <!-- /.card -->
-        <!-- </div> -->
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer">
+            <!-- <pagination
+              v-if="load_data==false"
+              class="float-right"
+              :limit="2"
+              :data="collector_group_with_members"
+              @pagination-change-page="populateInitialData"
+            ></pagination> -->
+          </div>
+          <!-- /.card -->
+        </div>
       </div>
     </div>
   </div>
@@ -218,22 +218,27 @@ export default {
     return {
       id: "",
       group_code: "",
-      driver: "",
+      selectedDriver: null,
       drivers: [],
       workers: [],
       groups: [],
-      selectedVehicle:null,
-      vehicles:[],
+      selectedVehicle: null,
+      vehicles: [],
       paginate_count: 10,
       errors: [],
       status: [],
       isEdit: false,
       load_data: true,
-      selectedWorkers: []
+      selectedWorkers: [],
+      collector_group_with_members: [],
+      rpp: 10,
+      search_str: null,
+      ppi: []
     };
   },
   mounted() {
     this.populateInitialData();
+    // this.itemPerPage();
     //this.populateVehicle();
   },
   methods: {
@@ -244,28 +249,20 @@ export default {
 
     resetForm() {
       this.isEdit = false;
-      this.id = "";
-      this.vname = "";
-      (this.regNo = null),
-        (this.manufacture_year = ""),
-        (this.registered_year = ""),
-        (this.selected_vehicle_type.id = null);
-      this.selected_vehicle_type.type_code = null;
-      this.selectedVehicleStatus.id = null;
-      this.selectedVehicleStatus.status = null;
+      this.group_code = "";
+      this.selectedDriver = null;
+      this.selectedVehicle = null;
       this.errors = [];
-      this.populateVehicle();
+      this.populateInitialData();
     },
 
-    createVehicle() {
+    createGroup() {
       axios
-        .post("/create/vehicle", {
-          name: this.vname,
-          reg_no: this.regNo,
-          reg_year: this.registered_year,
-          manf_year: this.manufacture_year,
-          vehicle_type_id: this.selected_vehicle_type.id,
-          status_id: this.selectedVehicleStatus.id
+        .post("/create/employee/group", {
+          group_code: this.group_code,
+          driver_id: this.selectedDriver.id,
+          vehicle_id: this.selectedVehicle.id,
+          selectedWorkers: this.selectedWorkers
         })
         .then(res => {
           if (res.status == 200) {
@@ -274,15 +271,22 @@ export default {
                 group: "foo",
                 type: "success",
                 title: "Important message",
-                text: "Vehicle create success!"
+                text: "Employee Group create success!"
               }),
                 this.resetForm();
-            } else {
+            } else if ((red.data = "Fail")) {
               Vue.notify({
                 group: "foo",
                 type: "warn",
                 title: "Important message",
-                text: "Vehicle create fail!"
+                text: "Employee Group create fail!"
+              });
+            } else if ((red.data = "exception")) {
+              Vue.notify({
+                group: "foo",
+                type: "warn",
+                title: "Important message",
+                text: red.data["exception"]
               });
             }
           } else if (res.status == 500) {
@@ -297,20 +301,36 @@ export default {
         .catch(err => {
           if (err.response.status == 422)
             this.errors = err.response.data.errors;
+          console.log(this.errors);
         });
     },
 
-    populateInitialData() {
-      axios.get("/collector/groups/" + this.paginate_count).then(res => {
-        if (res.status == 200) {
-          this.drivers = res.data["drivers"];
-          this.workers = res.data["workers"];
-          this.groups = res.data["groups"];
-          this.vehicles = res.data["vehicles"]
-          console.log(this.vehicles);
-          this.load_data = false;
-        }
-      });
+    // itemPerPage() {
+    //   axios.get("/prp").then(res => {
+    //     if (res.status == 200) {
+    //       this.ppi = res.data;
+    //     }
+    //   });
+    // },
+
+    populateInitialData(page = 1) {
+      this.load_data = true;
+      axios
+        .post("/collector/groups?page=" + page, {
+          rpp: this.rpp,
+          search_str: this.search_str
+        })
+        .then(res => {
+          if (res.status == 200) {
+            this.drivers = res.data["drivers"];
+            this.workers = res.data["workers"];
+            this.groups = res.data["groups"];
+            this.vehicles = res.data["vehicles"];
+            this.collector_group_with_members =
+              res.data["collector_group_with_members"];
+            this.load_data = false;
+          }
+        });
     },
 
     populateVehicle(page = 1) {
@@ -324,18 +344,30 @@ export default {
       });
     },
 
-    setVehicleToUpdate(Vehicle) {
+    setGroupToUpdate(group) {
+      console.log(group.collector_group);
       this.isEdit = true;
-      this.id = Vehicle.id;
-      this.vname = Vehicle.name;
-      this.regNo = Vehicle.reg_no;
-      this.manufacture_year = Vehicle.manf_year;
-      this.registered_year = Vehicle.reg_year;
-      this.selected_vehicle_type.id = Vehicle.vehicle_type_id;
-      this.selected_vehicle_type.type_code = Vehicle.type_code;
-      this.selectedVehicleStatus.id = Vehicle.status_id;
-      this.selectedVehicleStatus.status = Vehicle.status;
-      console.log(Vehicle);
+      this.selectedDriver = {
+        id: group.collector_group[0].driver_id,
+        name: group.collector_group[0].name
+      };
+      this.selectedVehicle = {
+        id: group.collector_group[0].vehicle_id,
+        reg_no: group.collector_group[0].reg_no
+      };
+      this.group_code = group.collector_group[0].group_code;
+      this.workers = group.group_member;
+      //
+      // this.id = Vehicle.id;
+      // this.vname = Vehicle.name;
+      // this.regNo = Vehicle.reg_no;
+      // this.manufacture_year = Vehicle.manf_year;
+      // this.registered_year = Vehicle.reg_year;
+      // this.selected_vehicle_type.id = Vehicle.vehicle_type_id;
+      // this.selected_vehicle_type.type_code = Vehicle.type_code;
+      // this.selectedVehicleStatus.id = Vehicle.status_id;
+      // this.selectedVehicleStatus.status = Vehicle.status;
+      // console.log(Vehicle);
     },
 
     updateVehicle() {

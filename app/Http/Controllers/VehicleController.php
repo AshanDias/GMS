@@ -16,8 +16,10 @@ class VehicleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($count)
+    public function index(Request $request)
     {
+        $rpp = $request->rpp;
+        $search_str = $request->search_str;
         $year=[];
         for ($index = 30; $index > 0; $index--) { 
             array_push($year, Carbon::now()->year+1 - $index);
@@ -25,8 +27,10 @@ class VehicleController extends Controller
         $vehicle_list =  DB::table('vehicles')
         ->join('statuses','statuses.id','vehicles.status_id')
         ->join('vehicle_types','vehicle_types.id','vehicles.vehicle_type_id')
+        ->where('vehicles.name','like','%'.$search_str.'%')
+        ->orWhere('vehicles.reg_no','like','%'.$search_str.'%')
         ->select('vehicles.*','statuses.status','vehicle_types.type_code')
-        ->paginate($count);
+        ->paginate($rpp);
         $vehicle_type =  VehicleType::select('id','type_code')->where('status_id',1)->get();
         $status = Status::select('id','status')->where('id',1)->orWhere('id',2)->get();
         
@@ -45,13 +49,22 @@ class VehicleController extends Controller
     }
 
     public function populateVehicle($count)
-    {
+    { 
+
         return DB::table('vehicles')
         ->join('statuses','statuses.id','vehicles.status_id')
         ->join('vehicle_types','vehicle_types.id','vehicles.vehicle_type_id')
         ->select('vehicles.*','statuses.status','vehicle_types.type_code')
         ->paginate($count);
         
+    }
+
+    public function vehicleData()
+    {
+        return DB::table('vehicles') 
+        ->join('vehicle_types','vehicle_types.id','vehicles.vehicle_type_id')
+        ->select('vehicles.id as vid','vehicles.name','vehicles.reg_no','vehicle_types.type_code')
+        ->get();
     }
    
 

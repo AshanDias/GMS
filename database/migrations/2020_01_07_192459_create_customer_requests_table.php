@@ -15,10 +15,12 @@ class CreateCustomerRequestsTable extends Migration
     {
         Schema::create('customer_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('user_id')->nullable();
+            $table->integer('user_id')->nullable();
             $table->string('customer_name')->nullable();
             $table->string('email')->nullable();
-            $table->bigInteger('area_id')->default(0);
+            $table->integer('area_id')->default(0);
+            $table->integer('vehicle_type_id')->nullable();
+            $table->integer('vehicle_id')->nullable();
             $table->string('description')->default(0);
             $table->string('tele_no')->default(0);            
             $table->double('longitude');
@@ -27,7 +29,9 @@ class CreateCustomerRequestsTable extends Migration
             $table->text('address_2')->nullable();
             $table->text('address_3')->nullable();
             $table->integer('category_id')->nullable();
-            $table->bigInteger('status_id')->nullable();
+            $table->integer('status_id')->nullable();
+            $table->string('request_date')->nullable();
+            $table->string('request_time')->nullable();
             $table->timestamps();
         });
     }

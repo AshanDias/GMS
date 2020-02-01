@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Employee;
 use Illuminate\Http\Request;
 use DB;
+use Hash;
 
 class EmployeeController extends Controller
 {    /**
@@ -27,11 +28,21 @@ class EmployeeController extends Controller
        //
    }
 
-   public function populateEmployee($count)
-   {
+   public function populateEmployee(Request $request)
+   {       
+        $rpp = $request->rpp;
+        $search_str = $request->search_str;
+
        return DB::table('employees')
        ->join('statuses','statuses.id','employees.status_id')
-       ->select('employees.*','statuses.status')->paginate();
+       ->join('user_types','user_types.id','employees.employee_type_id')
+       ->where('employees.first_name','like','%'.$search_str.'%')
+       ->orWhere('employees.last_name','like','%'.$search_str.'%')
+       ->orWhere('employees.nic','like','%'.$search_str.'%')
+       ->orWhere('employees.telephone_no','like','%'.$search_str.'%')
+       ->select('employees.*','statuses.status','user_types.name as empType')
+       ->orderBy('employees.id','ASC')
+       ->paginate($rpp);
    }
 
    /**
@@ -91,6 +102,32 @@ class EmployeeController extends Controller
    public function edit(Vehicle $vehicle)
    {
        //
+   }
+
+   
+   public function driverLogin(Request $request)
+   { 
+        $Employee = Employee::where('nic',$request->nic)->first();
+        $passwordHash = $Employee->password; 
+        $result = Hash::check($request->password, $passwordHash);
+        return json_encode($result);
+
+   }
+
+   public function passwordChange(Request $request)
+   { 
+     
+      try {
+        $employee = Employee::findOrFail($request->id);
+        $employee->password = Hash::make( $request->password);       
+        $result = $employee->save();
+
+       if($result)
+       return 'Success';
+
+      } catch (Exception $th) {
+          return $th;
+      }
    }
 
    /**

@@ -11,14 +11,18 @@ import VueRouter from 'vue-router'
 import Notifications from 'vue-notification'
 import VuejsDialog from 'vuejs-dialog';
 import VueSimpleAlert from "vue-simple-alert";
-import Paginate from 'vuejs-paginate'
 import Multiselect from 'vue-multiselect'
+import VueSweetalert2 from 'vue-sweetalert2';
+// import vuepassword from './components/public_component/vuepassword';
+import 'sweetalert2/dist/sweetalert2.min.css';
  
 Vue.use(VueRouter)
 Vue.use(Notifications)
 Vue.use(VuejsDialog);
 Vue.use(VueSimpleAlert);
-Vue.component('pagination', Paginate)
+Vue.use(VueSweetalert2);
+Vue.use(require('vue-moment'));
+Vue.component('pagination', require('laravel-vue-pagination'));
 Vue.component('multiselect', Multiselect)
 
 const routes = [
@@ -28,7 +32,11 @@ const routes = [
     { path: '/vehicle', component: require('./components/master_files/vehicle/vehicle_index.vue').default },  
     { path: '/user',component:require('./components/operation/user/user_index.vue').default},   
     { path: '/customer/request', component:require('./components/operation/request/customer_request.vue').default},
-    { path: '/collector/group', component:require('./components/operation/collector_group/group_index.vue').default}
+    { path: '/collector/group', component:require('./components/operation/collector_group/group_index.vue').default},
+    { path: '/vehecle/type/payment/assign', component:require('./components/operation/payment/vehicle_type_payments.vue').default},
+    { path: '/area/payment/assign', component:require('./components/operation/payment/area_payments.vue').default},
+    { path: '/map/view',component:require('./components/public_component/map.vue').default}
+
   ]
     
   const router = new VueRouter({

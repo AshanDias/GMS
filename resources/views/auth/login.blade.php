@@ -53,13 +53,13 @@
                     </div>
                     <!-- /.col -->
                     <div class="col-6">
-                       <div class="row">
-                           <div class="col-md-6 p-0 m-0">
+                       <div class="row">                         
+                            <div class="col-md-6 p-0 m-0">
+                                {{-- <a type="button" class="btn btn-danger" href="{{ route('register') }}">Sign Up</a>                                 --}}
+                            </div>
+                            <div class="col-md-6 p-0 m-0">
                                 <button type="submit" class="btn btn-primary ">Sign In</button>
-                           </div>
-                           <div class="col-md-6 p-0 m-0">
-                                <a type="button" class="btn btn-danger" href="{{ route('register') }}">Sign Up</a>                                
-                           </div>
+                            </div>
                        </div>
 
                     </div>

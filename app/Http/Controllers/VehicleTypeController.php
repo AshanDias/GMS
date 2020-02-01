@@ -16,7 +16,10 @@ class VehicleTypeController extends Controller
     {
         //
     }
-
+    public function populateData()
+    { 
+     return VehicleType::all(); 
+    }
     /**
      * Show the form for creating a new resource.
      *
